@@ -1,0 +1,141 @@
+﻿@model IEnumerable<prjDelicious.ViewModel.COrderViewModel>
+@using Microsoft.AspNetCore.Http
+@using prjDelicious.ViewModel
+
+@{
+    ViewData["Title"] = "List";
+    int login_id = Convert.ToInt32(Context.Session.GetString(CDictionary.CURRENT_LOGINED_USERID));
+    var statusText = Context.Request.Query["status"];
+}
+<div>
+    <section id="portfolio" class="portfolio" style="height:65%">
+        <div class="container">
+            @{ if (Model == null)
+                {
+                    <div class="text-center">
+                        <h1>您目前沒有任何資料</h1>
+                        <a class="btn btn-outline-secondary" href='@Url.Action("Index","HomePage")'>回到食譜頁面</a>
+                    </div>
+                }
+                else
+                {
+                    <div class="container" style="text-align:center;width:500px;height:100px;margin-top:20px;">
+                        <div data-status="@statusText" class="btn-group statusDiv" role="group" aria-label="Basic radio toggle button group">
+                            <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" @*@(ViewBag.status=="全部"?"checked='checked'" : "" )*@>
+                            <a href="/OrderDetail/List?memberid=@login_id&status=全部" class="btn btn-outline-primary" for="btnradio1">全部</a>
+
+                            <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off" @*@(ViewBag.status == "待付款" ? "checked='checked'" : "" )*@>
+                            <a href="/OrderDetail/List?memberid=@login_id&status=待付款" class="btn btn-outline-primary" for="btnradio2">待付款</a>
+
+                            <input type="radio" class="btn-check" name="btnradio" id="btnradio3" autocomplete="off" @*@(ViewBag.status == "已付款" ? "checked='checked'" : "" )*@>
+                            <a href="/OrderDetail/List?memberid=@login_id&status=已付款" class="btn btn-outline-primary" for="btnradio3">已付款</a>
+
+                            <input type="radio" class="btn-check" name="btnradio" id="btnradio4" autocomplete="off" @*@(ViewBag.status == "出貨中" ? "checked='checked'" : "" )*@>
+                            <a href="/OrderDetail/List?memberid=@login_id&status=出貨中" class="btn btn-outline-primary" for="btnradio4">出貨中</a>
+
+                            <input type="radio" class="btn-check" name="btnradio" id="btnradio5" autocomplete="off" @*@(ViewBag.status == "已送達" ? "checked='checked'" : "" )*@>
+                            <a href="/OrderDetail/List?memberid=@login_id&status=已送達" class="btn btn-outline-primary" for="btnradio5">已送達</a>
+
+                            <input type="radio" class="btn-check" name="btnradio" id="btnradio6" autocomplete="off" @*@(ViewBag.status=="已取消"?"checked='checked'" : "" )*@>
+                            <a href="/OrderDetail/List/?memberid=@login_id&status=已取消" class="btn btn-outline-primary" for="btnradio6">已取消</a>
+                        </div>
+                    </div>
+                    @foreach (var item in Model)
+                    {
+                        <div style="padding:50px 0px;background-color:#FFF3EE;border-radius:10px;">
+                            <div>
+                                <span>訂單編號:@item._order.OrderId</span>
+                                <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;訂單日期:@item._order.OrderDate</span><br />
+                                <span>訂單狀態:@item._order.OrderStatus</span>
+                                <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;出貨日期:@item._order.DeliveredDate</span>
+                            </div>
+                            <div>
+                                <table id="tableid" class="table text-center">
+                                    <thead>
+                                        <tr>
+                                            <td>食材名稱</td>
+                                            <td>商品單價 / 單位</td>
+                                            <td>購買數量</td>
+                                            <td>小計</td>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        @foreach (var detail in item.orderdetailList)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @detail.Ingredient
+                                                </td>
+                                                <td>
+                                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$@detail._orderdetail.Price&nbsp;&nbsp;/&nbsp;&nbsp;@detail.Unit
+                                                </td>
+                                                <td>
+                                                    @detail._orderdetail.InCartQuantity
+                                                </td>
+                                                <td class="subtotal">
+                                                    $@(detail._orderdetail.Price * detail._orderdetail.InCartQuantity)
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                                <div>
+                                    收貨方式:@item._order.RecieveMethod <br />
+                                    收貨地址:@item._order.DeliveryCounty @item._order.DeliveryDistrict @item._order.DeliveryAddress
+                                </div>
+                                <div style="float:right">
+                                    <span>總計:$@item.totalPrice</span>
+                                    @if (item._order.OrderStatus == "待付款")
+                                    {
+                                        <button type="button" class="btn btn-secondary opaysend opay" data-oid="@item._order.OrderId">去付款</button>
+                                        <button type="button" class="btn btn-danger cancelbtn" id="@item._order.OrderId">取消此筆訂單</button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                    }
+                }
+            }
+        </div>
+    </section>
+</div>
+@section Style{
+}
+@section scripts{
+    <link href="/assets/css/StyleOrderListTable.css" rel="stylesheet">
+
+    <script>
+
+        $(document).on("click", ".cancelbtn", function () {
+            var windowshow = confirm("確定取消此筆訂單嗎?");
+            if (windowshow) {
+                $.ajax({
+                    url: '/OrderDetail/Edit',
+                    data: { 'orderid': $(this).attr('id') }
+                }).done(data => {
+                    alert(data);
+                    window.location.reload();
+                }).fail(error => {
+                    alert("取消訂單失敗，請洽客服")
+                })
+            }
+        })
+
+        var inputs = $(".statusDiv").children("a")
+        //console.log($(".statusDiv").children("input"))
+        //console.log($(".statusDiv > input"))
+        inputs.each(function () {//內層迴圈所有input判斷收藏夾id有無匹配
+            if ($(this).parent("div").data("status") == $(this).text()) {
+                $(this).prev("input").attr("checked", "checked");
+            }
+        })
+        $(".opay").on("click", function () {
+            let oid = $(this).data("oid")
+            console.log(oid);
+            window.open(`/Opay/SetParameter?orderid=${oid}`, "歐付寶付款頁面", config = 'height=500,width=1000');
+        })
+    </script>
+
+}

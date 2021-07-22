@@ -1,0 +1,150 @@
+﻿@using Microsoft.AspNetCore.Http
+@using prjDelicious.ViewModel
+@{ 
+    ViewBag.USERNAME = Context.Session.GetString(CDictionary.CURRENT_LOGINED_USERNAME);
+    ViewBag.USERID = Context.Session.GetString(CDictionary.CURRENT_LOGINED_USERID);
+    ViewBag.USERPHOTO = Context.Session.GetString(CDictionary.CURRENT_LOGINED_USERPHOTO);
+    ViewBag.USERNICKNAME = Context.Session.GetString(CDictionary.CURRENT_LOGINED_USERNICKNAME);
+    string _Management_web_address = CDictionary.Management_web_address ;
+}
+<!DOCTYPE html>
+<html lang="zh-hant">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=yes" >
+    <title>@ViewData["Title"] - prjDelicious</title>
+    <!--bootstrap-->
+    <link href="/assets/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <!-- Vendor CSS Files -->
+    <link href="/assets/vendor/animate.css/animate.min.css" rel="stylesheet">
+    <link href="/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="/assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+    <link href="/assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+    <link href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous" rel="stylesheet">
+    <!-- Favicons -->
+    <link href="/assets/img/favicon.png" rel="icon">
+    <link href="/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+    @await RenderSectionAsync("Style", required: false)
+</head>
+<body>
+    <!-- ======= Top Bar ======= -->
+    <section id="topbar" class="d-flex align-items-center">
+        <div class="container d-flex justify-content-center justify-content-md-between">
+            <div class="div-logo">
+                <img src="/assets/img/logo.png" width="38" height="38" class="logoimg" />
+                <h4 class="logo me-auto"><a href="/HomePage/Index">瘋廚網</a></h4>
+            </div>
+            <div class="marquee">
+                <h4 style="width:600px">料理，不只是料理，料理，是創造極致的美食體驗，因此每個小細節都至關重要。</h4>
+            </div>
+            <div class="contact-info align-items-center div-connection">
+                <i class="bi bi-envelope-fill"></i><a class="topbar-email" href="CrazyCook@gmail.com">CrazyCook@gmail.com</a>
+            </div>
+            <div class="social-links d-none d-md-block">
+                <a href="https://twitter.com/?lang=zh-tw" class="twitter"><i class="bi bi-twitter"></i></a>
+                <a href="https://www.facebook.com/" class="facebook"><i class="bi bi-facebook"></i></a>
+                <a href="https://www.instagram.com/" class="instagram"><i class="bi bi-instagram"></i></a>
+                <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
+            </div>
+        </div>
+    </section>
+    <!-- ======= Header ======= -->
+    <header id="header" class="d-flex align-items-center">
+        <div class="container-sm d-flex align-items-center">
+            <!--搜尋-->
+            <div class="input-group mb-sm-3" id="divSearch">
+                <select class="form-select shadow-sm" id="selSearch">
+                    <option selected value="recipe">找食譜</option>
+                    <option value="member">找作者</option>
+                </select>
+                <input type="text" class="form-control shadow-sm" id="txtSearch" aria-label="Text input with dropdown button">
+                <button class="btn btn-outline-secondary shadow-sm" type="button" id="btnSearch">搜尋</button>
+            </div>
+            <!--功能列表-->
+            <nav id="navbar" class="navbar">
+                <ul id="ul-features">
+                    <li><a class="nav-link scrollto" href="/Shopper/Index?">瘋廚商城</a></li>
+                    <li><a class="nav-link scrollto" href="/MemberRank/List">積分排名</a></li>
+                    <li><a class="nav-link scrollto" href="#" onClick="window.open('@(_Management_web_address+"ManagementChat/customerGroupIndex")','聯絡客服','width=370,height=500,directories=no,location=no,menubar=no,scrollbars=yes,status=no,toolbar=no,resizable=no,left=5,top=50,screenX=0,screenY=0');return false">聯絡客服</a></li>
+                    <li><a class="nav-link scrollto" href="#" onClick="window.open('/publicchat/index','公共聊天室','width=370,height=500,directories=no,location=no,menubar=no,scrollbars=yes,status=no,toolbar=no,resizable=no,left=5,top=50,screenX=0,screenY=0');return false">公共聊天室</a></li>
+                    <li><a class="nav-link scrollto" href="/Tfeedbacks/Index">問題回報</a></li>
+                    @if (ViewBag.USERID != null)
+                    {
+                        <li><a class='getstarted scrollto' id='btn-addrecipe' href="/ForRecipe/Add_Recipe">新增食譜+</a></li>
+                        <li><a class='getstarted scrollto' id='btn-addphotowall' href="/HomePage/PhotoContribute">美食攝影投稿</a></li>
+                        <li class='dropdown' id='li-member'>
+                            <a href='/UserPage/Profile?id=@(ViewBag.USERID)'>
+                                <img class='img-fluid img-profile rounded-circle mx-auto mb-2' src='@(ViewBag.USERPHOTO)' width='55' height='55' id='figure-bar' />
+                                <span>@(ViewBag.USERNICKNAME)</span>
+                                <i class='bi bi-chevron-down'></i>
+                            </a>
+                            <ul id='ul-member'>
+                                <li><a href='/UserPage/Profile?id=@(ViewBag.USERID)'>個人頁面</a></li>
+                                <li><a href='/Folder/Index?memberId=@(ViewBag.USERID)'>食譜收藏夾</a></li>
+                                <li><a href='/LikeRecipe/Index?id=@(ViewBag.USERID)'>喜歡的食譜</a></li>
+                                <li><a href='/Wishlist/List?memberid=@(ViewBag.USERID)'>願望清單</a></li>
+                                <li><a href='/Shopper/Checkout'>購物車</a></li>
+                                <li><a href='/OrderDetail/List?memberid=@(ViewBag.USERID)&status=全部'>購買紀錄</a></li>
+                                <li><a href='#' onclick='Logout()'>登出</a></li>
+                            </ul>
+                        </li>
+
+                    }
+                    else
+                    {
+                        <li><a class='getstarted scrollto' id='btn-addrecipe' href="/HomePage/Login" onclick="alert('請先登入會員')">新增食譜+</a></li>
+                        <li><a class='getstarted scrollto' id='btn-addphotowall' href="/HomePage/Login" onclick="alert('請先登入會員')">美食攝影投稿</a></li>
+                        <li><a class='getstarted scrollto' id='btn-login' href='/HomePage/Login'>會員登入</a></li>
+                    }
+                </ul>
+                <i class="bi bi-list mobile-nav-toggle"></i>
+            </nav>
+
+        </div>
+
+    </header>
+
+    @RenderBody()
+
+    <div id="divtag" class="container" style="max-width: 1000px; margin: 0 auto; bottom:0px">
+
+    </div>
+
+    <!-- ======= 其他資訊 ======= -->
+    <footer id="footer">
+        <div class="container">
+            <h3>瘋廚網</h3>
+            <p></p>
+            <div class="social-links">
+                <a href="#" class="twitter"><i class="bi bi-twitter"></i></a>
+                <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
+                <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
+                <a href="#" class="google-plus"><i class="bi bi-skype"></i></a>
+                <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
+            </div>
+            <div class="copyright">
+                &copy; Copyright <strong><span>CrazyCook</span></strong>. All Rights Reserved
+            </div>
+            <div class="credits">
+                Designed by <a href="https://bootstrapmade.com/">資策會MSIT130最牛逼的第一組</a>
+            </div>
+        </div>
+    </footer>
+    <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+    <!-- Template Main CSS File -->
+    <link href="/assets/css/style.css" rel="stylesheet">
+    <!-- Template Main JS File -->
+    <script src="/js/jquery-3.6.0.min.js"></script>
+    <!-- Vendor JS Files -->
+    <script src="/assets/vendor/swiper/swiper-bundle.min.js"></script>
+    <script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/vendor/glightbox/js/glightbox.min.js"></script>
+    <script src="/assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+    <script src="/assets/vendor/php-email-form/validate.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/tagcloud.js"></script>
+    <script type="text/javascript" src="/js/layout.js" charset="UTF-8"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

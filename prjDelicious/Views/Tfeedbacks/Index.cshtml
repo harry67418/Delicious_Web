@@ -1,0 +1,88 @@
+﻿@model IEnumerable<prjDelicious.Models.Tfeedback>
+
+@{
+    ViewData["Title"] = "Index";
+}
+<div class="container">
+    
+    <p>
+        <a asp-action="Create">回報問題</a>
+    </p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    回報內容
+                    @*@Html.DisplayNameFor(model => model.Contents)*@
+                </th>
+                <th>
+                    客服評價
+                    @*@Html.DisplayNameFor(model => model.Comment)*@
+                </th>
+                <th>
+                    回報日期
+                    @*@Html.DisplayNameFor(model => model.FeedbackDate)*@
+                </th>
+                <th>
+                    客服回覆內容
+                    @*@Html.DisplayNameFor(model => model.FeedbackContent)*@
+                </th>
+                <th>
+                    回報圖片
+                    @*@Html.DisplayNameFor(model => model.Picture)*@
+                </th>
+                <th>
+                    回報分類
+                    @*@Html.DisplayNameFor(model => model.FeedbackCategory)*@
+                </th>
+                <th>
+                    會員
+                    @*@Html.DisplayNameFor(model => model.Member)*@
+                </th>
+                <th>
+                    進度
+                    @*@Html.DisplayNameFor(model => model.Progress)*@
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Contents)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Comment)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FeedbackDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FeedbackContent)
+                    </td>
+                    <td>
+                        @if(item.Picture != "" && item.Picture !=null) {
+                        <img src="/assets/img/"@item.Picture />
+                        }
+                        
+                        @*@Html.DisplayFor(modelItem => item.Picture)*@
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FeedbackCategory.FeedbackCategory)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Member.AccountName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Progress.ProgressContent)
+                    </td>
+                    <td>
+                        <a asp-action="Delete" asp-route-id="@item.FeedbackId">刪除客訴</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

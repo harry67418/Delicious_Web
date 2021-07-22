@@ -1,0 +1,114 @@
+﻿
+@{     
+   
+    Layout = null;
+}
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=2.0, user-scalable=yes" />
+</head>
+<section class="align-items-center" style="float: left; border: solid; padding: 20px; overflow:scroll ;height:400px; width:300PX;" >
+    <h3>線上聊天區</h3>
+    <form method="post" action="~/ApiChat/ImageInput" name="memberInfo">
+        <div class="container">
+            @*<div class="drop" id="Picturedrop">
+
+            </div>*@
+            <div class="row">&nbsp;</div>
+            <div class="row">
+                <div class="col-2">暱稱</div>
+                <div class="col-4">
+                    <input type="text" id="userInput" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-2">訊息</div>
+                <div class="col-4">
+                    <input type="text" id="messageInput" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-2">選擇圖片</div>
+                <div class="col-4">
+                    <label for="imageInput" style="border:solid">選擇檔案</label>
+                    <input type="file" class="form-control-file" id="imageInput" name="Photo" hidden>
+                </div>
+            </div>
+
+
+            <div class="row">&nbsp;</div>
+            <div class="row">
+                <div class="col-6">
+                    <input type="button" id="sendimgButton" value="發送照片" />
+                    <input type="button" id="sendButton" value="發送訊息" />
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="row">
+        <div class="col-12">
+            <hr />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <ul id="messagesList"></ul>
+        </div>
+    </div>
+</section>
+    <script src="~/js/signalr/dist/browser/signalr.js"></script>
+    <script src="~/js/chat.js"></script>
+    @section Scripts{
+        <script>
+            //document.querySelector(".imageInput").addEventListener("change", function () { });
+
+
+            document.querySelector(".drop").addEventListener("dragover", dragoverHandler);
+            document.querySelector(".drop").addEventListener("drop", dropHandler);
+            function dragoverHandler(e) {
+                e.preventDefault();
+            }
+
+            function dropHandler(e) {
+                e.preventDefault();
+                var theFiles = e.dataTransfer.files;
+                for (var i = 0; i < theFiles.length; i++) {
+                    var theFile = theFiles[i];
+                    var reader = new FileReader();
+                    reader.addEventListener("load", function (e) {
+                        var fileContent = e.target.result;
+                        var imgObj = document.createElement("img");
+                        imgObj.setAttribute("src", fileContent);
+                        imgObj.setAttribute("id", "cimg1");
+                        imgObj.setAttribute("width", "90px");
+                        imgObj.setAttribute("height", "90px");
+                        document.querySelector("#Picturedrop").appendChild(imgObj);
+
+                    });
+                    reader.readAsDataURL(theFile);
+
+
+
+                }
+            }
+        </script>
+    }
+    @section Styles{
+        <style>
+            .drop {
+                border: 2px #ccc dotted;
+                width: 100px;
+                height: 100px;
+                overflow: auto;
+                margin: 10px 10px 10px 10px;
+            }
+
+            .myactive {
+                opacity: 0.2;
+            }
+
+            .myhover {
+                border: 5px solid red;
+            }
+        </style>
+    }

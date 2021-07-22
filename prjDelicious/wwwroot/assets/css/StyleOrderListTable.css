@@ -1,0 +1,17 @@
+﻿#tableid > thead > tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+#tableid > tbody {
+    display: block;
+    height: 200px;
+    overflow-y: scroll;
+}
+
+#tableid > tbody > tr {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+}

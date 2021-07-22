@@ -1,0 +1,126 @@
+﻿@model Management.ViewModel.CPhotoWallViewModel
+
+@{
+    ViewData["Title"] = "PhotoWall";
+}
+
+<style>
+    .selected {
+       /*  filter: grayscale(50%);*/
+        border: 5px dashed #0000E3;
+        border-radius:40%
+    }
+    
+</style>
+
+    <div class="h3 bgmainbar text-center">美食牆會員投稿</div>
+
+<div class="text-center"><button id="categoryrank" class="bgbtn" style="margin:5px">@Html.ActionLink("清單排序","Index")</button><button id="timerank" class="bgbtn" style="margin:5px">@Html.ActionLink("圖片排序", "listbycategory")</button></div>
+
+@foreach(var item in Model.list)
+{
+<section class="py-5 text-center bgbar rounded">
+    <label class="h3">@item.Category</label>
+    <label class="h4">已選取數量 </label>
+    <input type="text" class="h4 countthesame text-center rounded" style="width:50px" value="@item.CounttheSame" disabled/>
+    <div class="container px-4 px-lg-5 mt-5">
+        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-between" id="@item.CategoryId" style="background-color:	#D1E9E9;padding-top:35px;border-radius:10px"></div>
+    </div>
+</section>
+}
+
+
+@section Scripts{
+
+    <script>
+        loaddatas()
+        async function loaddatas()
+        {
+            const response = await fetch('/PhotoWall/list/?keywords=全部種類')
+            const datas = await response.json()
+            console.log(datas)        
+                datas.list.forEach(
+                    item => {
+                    const docFrag = document.createDocumentFragment()
+                    const { memberId, pictureId, picture, display, categoryId, memberAccountName, category, contributeTime, categoryCount } = item   
+
+                    const doc0 = document.createElement('div')
+                    doc0.classList.add('col')
+                        doc0.classList.add('mb-5')
+                       
+
+                    const doc1 = document.createElement('div')
+                    doc1.classList.add('card')
+                    doc1.classList.add('h-100')
+                    doc1.classList.add('rounded-circle')
+
+
+
+                    const doc2 = document.createElement('img')
+                    doc2.classList.add('card-img-top')
+                        doc2.setAttribute('src', 'https://deliciousnet.azurewebsites.net/assets/img/wall/' + picture)
+                    doc2.setAttribute('alt', "pictureID=" + pictureId)
+                    doc2.setAttribute('title', "會員名稱" + memberId+" " +memberAccountName + "發佈時間" + contributeTime)
+                    doc2.setAttribute('width', '300')
+                    doc2.setAttribute('height', '200')
+                    doc2.setAttribute('style', 'border-radius:50%')
+                    doc2.setAttribute('picid', pictureId)
+                    //doc2.setAttribute('categorycount', categorycount)
+                    doc2.addEventListener('click',changestatus)
+                    if (display) {
+                        doc2.classList.add('selected')
+                    }
+
+                    const doc3 = document.createElement('div')
+                    doc3.classList.add('card-body')
+                    doc3.classList.add('p-2')
+
+                    const doc4 = document.createElement('div')
+                    doc4.classList.add('text-center')
+ 
+                    doc3.appendChild(doc4)
+                    doc2.appendChild(doc3)
+                    doc1.appendChild(doc2)
+                    doc0.appendChild(doc1)
+                 
+                     docFrag.appendChild(doc0)
+                     document.getElementById(categoryId).appendChild(docFrag)
+
+                })
+   
+        }
+                      
+
+        function changestatus() {
+            const count = Number($(this).closest('section').find('input').val().toString())
+            if (count>= 12 && !$(this).hasClass('selected')) {
+                alert('同種類已選取12項,請取消相同項目')
+            }
+            else
+            {
+                if ($(this).hasClass('selected'))
+                { $(this).closest('section').find('input').val(count - 1) }
+                else
+                { $(this).closest('section').find('input').val(count + 1) }
+                $(this).toggleClass('selected')
+                var id = $(this).attr('picid')
+                savestatus(id)
+            }
+
+        }
+
+        async function savestatus(id) {
+           
+            fetch('/PhotoWall/savestatus/?picid=' + id).
+                then(response => {
+                   // alert('Successful')
+
+                }).catch(error => { alert(error) })
+
+
+        }     
+
+    </script>
+
+
+}

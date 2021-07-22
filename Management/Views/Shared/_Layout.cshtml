@@ -1,0 +1,195 @@
+﻿@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link href="/assets/img/favicon.png" rel="icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>瘋廚網</title>
+    <link href="~/css/styles.css" rel="stylesheet" />
+    <link href="~/css/StyleManagement.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+</head>
+<body>
+    <nav class="sb-topnav navbar navbar-expand navbar-dark bgmain">
+        @* bg-dark *@
+    <!-- Navbar Brand-->
+    <a class="navbar-brand ps-3" href="/Home/index"><img src="~/img/LOGO.jpg" width="50" height="50">瘋廚網管理後台</a>
+    <!-- Sidebar Toggle-->
+    <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+    <!-- Navbar Search-->
+    <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+        <div class="input-group">
+            @{
+                string adminName = this.User.Identity.Name;  //获取写入的adminName
+
+
+                <h4 style="color:white"> @adminName 管理員您好</h4>
+            }
+            <!--這裡-->
+        </div>
+    </form>
+    <!-- Navbar-->
+    <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="~/home/Logout">登出</a></li>
+                <li><a class="dropdown-item" href="~/home/Signup">新增管理員</a></li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+<div id="layoutSidenav">
+    <div id="layoutSidenav_nav">
+        <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+            @* sb-sidenav-dark *@
+            <div class="sb-sidenav-menu">
+                <div class="nav">
+                    <!--<div class="sb-sidenav-menu-heading">網站管理</div>
+    <a class="nav-link" href="index.html">
+        <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+        食譜網
+    </a>
+    <a class="nav-link" href="index.html">
+        <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+        使用者統計分析
+    </a>-->
+
+                    <div class="sb-sidenav-menu-heading">網站管理</div>
+                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                        <div class="sb-nav-link-icon"><i class="fas fa-utensils"></i></div>
+                        食譜網
+                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                    </a>
+                    <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                        <nav class="sb-sidenav-menu-nested nav">
+                            <a class="nav-link" href="/MemberManagement/Index">會員管理</a>
+                            <a class="nav-link" href="/Recipe/Index">食譜管理</a>
+                            <a class="nav-link" href="/ShowingPics/Index">輪播牆</a>
+                            <a class="nav-link" href="/PhotoWall/listbycategory">美食牆</a>
+                            <a class="nav-link" href="#" onClick="window.open('/managementchat/groupindex','客服中心','width=800,height=500,directories=no,location=no,menubar=no,scrollbars=yes,status=no,toolbar=no,resizable=no,left=5,top=50,screenX=0,screenY=0');return false">開啟線上客服中心</a>
+
+                            <a class="nav-link" href="/memberfeedback/Index">問題反應</a>
+                            <a class="nav-link" href="/accusation/Index">檢舉文章列表</a>
+                            <a class="nav-link" href="/HashTag/Index">HashTag管理</a>
+                        </nav>
+                    </div>
+                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                        <div class="sb-nav-link-icon"><i class="fas fa-shopping-cart"></i></div>
+                        商城網
+                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                    </a>
+                    <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                        <nav class="sb-sidenav-menu-nested nav">
+                            <a class="nav-link" href="/BusinessWebsite/Index">商城一覽圖</a>
+                            <a class="nav-link" href="/Ingredient/SessionDemoSend">商品明細</a>
+                            <a class="nav-link" href="/Order/Index">訂單明細</a>
+                            @*<a class="nav-link" href="/ShipperExport/Index">訂單匯出</a>*@
+                        </nav>
+                    </div>
+                    @*<div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+            <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
+                    商品管理
+                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                </a>
+                <div class="collapse" id="pagesCollapseAuth" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordionPages">
+                    <nav class="sb-sidenav-menu-nested nav">
+                        <a class="nav-link" href="/Ingredient/index">商品明細</a>
+                        <a class="nav-link" href="register.html">庫存列表</a>
+                    </nav>
+                </div>
+            </nav>
+
+        </div>
+
+        <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+            <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
+                    訂單管理
+                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                </a>
+                <div class="collapse" id="pagesCollapseAuth" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordionPages">
+                    <nav class="sb-sidenav-menu-nested nav">
+                        <a class="nav-link" href="/Order/Index">訂單明細</a>
+                        <a class="nav-link" href="login.html">訂單匯出</a>
+                    </nav>
+                </div>
+            </nav>
+
+        </div>*@
+                    <div class="sb-sidenav-menu-heading">統計分析</div>
+                    <a class="nav-link" href="/Analyze/Members">
+                        <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                        會員分析
+                    </a>
+                    <a class="nav-link" href="/Analyze/Recipe">
+                        <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                        食譜商品分析
+                    </a>
+                    <a class="nav-link" href="/Analyze/Sale">
+                        <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                        銷售分析
+                    </a>
+                </div>
+            </div>
+            <!--@*<div class="sb-sidenav-footer">
+                <div class="small">Logged in as:</div>
+                Start Bootstrap
+            </div>*@-->
+        </nav>
+    </div>
+    <div id="layoutSidenav_content">
+        <main>
+            <div class="container-fluid px-4">
+                @RenderBody()
+
+            </div>
+        </main>
+        <footer class="py-4 bg-light mt-auto">
+            <div class="container-fluid px-4">
+                <div class="d-flex align-items-center justify-content-between small">
+                    <div class="text-muted">Copyright &copy; Your Website 2021</div>
+                    <div>
+                        <a href="#">Privacy Policy</a>
+                        &middot;
+                        <a href="#">Terms &amp; Conditions</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script src="/js/scripts.js"></script>
+<script>
+    window.addEventListener('DOMContentLoaded', event => {
+
+        // Toggle the side navigation
+        const sidebarToggle = document.body.querySelector('#sidebarToggle');
+        if (sidebarToggle) {
+            // Uncomment Below to persist sidebar toggle between refreshes
+            // if (localStorage.getItem('sb|sidebar-toggle') === 'true') {
+            //     document.body.classList.toggle('sb-sidenav-toggled');
+            // }
+            sidebarToggle.addEventListener('click', event => {
+                event.preventDefault();
+                document.body.classList.toggle('sb-sidenav-toggled');
+                localStorage.setItem('sb|sidebar-toggle', document.body.classList.contains('sb-sidenav-toggled'));
+            });
+        }
+
+    });</script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

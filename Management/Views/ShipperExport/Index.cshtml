@@ -1,0 +1,193 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+<div class="h3 bgmainbar text-center">EXCEL檔案匯出</div>
+<form style="margin:5px" name="conditions" id="conditions">
+    <capital style="font-weight:700">搜尋條件</capital>
+    <div class="input-group" style="margin-top:3px">
+        <div class="input-group-prepend">
+            <span class="input-group-text">訂貨日期</span>
+        </div>
+        <input type="date" aria-label="SelOrderMin" id="SelOrderMin" name="SelOrderMin" class="form-control col-2" placeholder="開始期間" value="@DateTime.Today.AddMonths(-2).ToString("yyyy-MM-dd")">
+        <input type="date" aria-label="SelOrderMax" id="SelOrderMax" name="SelOrderMax" class="form-control col-2" placeholder="結束期間" value="@DateTime.Today.AddMinutes(1).ToString("yyyy-MM-dd")">
+    </div>
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <select id="SelOrderStatus" class="btn btn-light" name="SelOrderStatus">
+                <option value="訂單狀態" selected="selected">訂單狀態</option>
+                <option value="待付款">待付款</option>
+                <option value="已付款">已付款</option>
+                <option value="出貨中">出貨中</option>
+                <option value="已送達">已送達</option>
+                <option value="已取消">已取消</option>
+            </select>
+        </div>
+        <input type="text" aria-label="SelOrderID" id="SelOrderID" name="SelOrderID" class="form-control col-2" placeholder="訂單編號" value="">
+        <input type="text" aria-label="SelPhone" id="SelPhone" name="SelPhone" class="form-control col-2" placeholder="手機號碼" value="">
+        <input type="text" aria-label="SelEmail" id="SelEmail" name="SelEmail" class="form-control col-3" placeholder="電子信箱" value="">
+    </div>
+    <div class="input-group">
+        <input type="button" value="搜尋" class="btn btn-outline-secondary col-2" id="btnsearch" />
+        <input type="button" value="清除搜尋條件" class="btn btn-outline-secondary col-2" id="btnclear" />
+        <input type="button" value="匯出訂單清單" class="btn btn-outline-success col-2" id="btnexcel" />
+    </div>
+</form>
+
+<label class="font-weight-bold">輸入訂單編號</label>
+
+<input type="text" id="infoid" />
+@*<button id="exportexcel">@Html.ActionLink("轉出EXCEL", "ExportToExcel", new { orderid = 11 })</button>*@
+<input id="exportexcel" type="button" class="btn btn-success" value="轉出EXCEL" />
+<div style="margin-top:5px">
+    <div>
+        <table class="table table-hover" style="text-align:center" id="datatablesSimple">
+            <thead>
+                <tr>
+                    <th>下載訂單</th>
+                    <th>序號</th>
+                    <th>訂單編號</th>
+                    <th>會員編號</th>
+                    <th>會員姓名</th>
+                    <th>電話/手機號碼</th>
+                    <th>訂單日期</th>
+                    <th>出貨日期</th>
+                    <th>訂單狀態</th>
+                    <th>宅配方式</th>
+
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+
+
+
+@section Scripts{
+
+    <script>
+          const docfrag = $(document.createDocumentFragment())
+
+        $('#btnsearch').on('click', function () { search() })
+        $('#btnclear').on('click', function () {
+            $('#SelDelMin').val('@(DateTime.Today.AddMonths(-1).ToString("yyyy-MM-dd"))')
+            $('#SelDelMax').val(new Date().toJSON().slice(0, 10))
+            $('#SelOrderMin').val('@(DateTime.Today.AddMonths(-1).ToString("yyyy-MM-dd"))')
+            $('#SelOrderMax').val('@(DateTime.Today.AddMinutes(1).ToString("yyyy-MM-dd"))')
+            $("#SelOrderStatus option[value='訂單狀態']").prop("selected", "selected")
+            $("#SelRecieveMethod option[value='送貨方式']").prop("selected", "selected")
+            $('#SelOrderID').val("")
+            $('#SelMember').val("")
+            $('#SelPhone').val("")
+            $('#SelEmail').val("")
+
+        })
+        search()
+
+        async function search() {
+            const formconditions = new FormData(document.conditions)
+            console.log(formconditions)
+            var response = await fetch('/Order/conditions', { method: 'post', body: formconditions })
+            var data = await response.json()
+            var count = 0
+            console.log("確認:"+data)
+            data.forEach(items => {
+                count = count + 1
+
+                const tID1 = $('<td></td>').html('<button id=' + items.orderId + ' class="btn btn-success tdsend"><i class="fas fa-file-download"></i></button>')
+                const tID2 = $('<td></td>').text(count)
+                const tID3 = $('<td></td>').text(items.orderId)
+                const tID4 = $('<td></td>').text(items.memberId)
+                const tID5 = $('<td></td>').text(items.member)
+                const tID6 = $('<td></td>').text(items.cellNumber)
+                const tID7 = $('<td></td>').text(items.orderDate)
+                const tID8 = $('<td></td>').text(items.deliveredDate)
+                const tID9 = $('<td></td>').text(items.orderStatus)
+                const tID10 = $('<td></td>').text(items.recieveMethod)
+                // const tID9 = $('<td class="tdedit"></td>').html()
+                //const tID10 = $('<td></td>').html('<button class="btn btn-danger tddelete" id=' + items.ingredientId +'><i class="fas fa-trash-alt"></i></button>')
+                const row = $('<tr></tr>').append([tID1], [tID2], [tID3], [tID4], [tID5], [tID6], [tID7], [tID8], [tID9], [tID10])
+                docfrag.append(row)
+            })
+
+
+            console.log(data)
+            $('#datatablesSimple>tbody').html(docfrag)
+        }
+
+        $('#conditions').on('change', $('#SelOrderStatus'), function () {
+            // console.log('changed')
+            //console.log($('#SelOrderStatus').val())
+            if ($('#SelOrderStatus').val() == '出貨中' || $('#SelOrderStatus').val() == '已送達') {
+                $('#SelDelMin').prop('disabled', false)
+                $('#SelDelMax').prop('disabled', false)
+            }
+            else {
+                $('#SelDelMin').prop('disabled', true)
+                $('#SelDelMax').prop('disabled', true)
+
+
+                $('#SelDelMin').val('@(DateTime.Today.AddMonths(-1).ToString("yyyy-MM-dd"))')
+                $('#SelDelMax').val('@(DateTime.Today.AddMinutes(1).ToString("yyyy-MM-dd"))')
+            }
+        })
+
+
+        $('#datatablesSimple>tbody').on('click', '.tdedit', function () {
+            console.log($(this).children())
+            getorderdetail(Number($(this).prop('id')))
+
+        })
+        $("#exportexcel").on("click", function () {
+            console.log($("#infoid").val())
+            const orderid = $("#infoid").val()
+            window.open("/ShipperExport/SingleExport/?orderid=" + orderid)
+        })
+        function exportexcel(orderid) {
+
+            window.open("/ShipperExport/SingleExport/?orderid=" + orderid)
+        }
+        $('#datatablesSimple>tbody').on('click', '.tdsend', function () {
+
+            exportexcel(Number($(this).prop('id')))
+
+        })
+
+        $("#btnexcel").on("click", function () {
+            var web = "/ShipperExport/GroupExport/"
+            const orderstatus = $("#SelOrderStatus").val()
+            web +="?SelOrderStatus=" + orderstatus
+           
+            if ($("#SelOrderID").val() != null)
+            {
+                const orderid = $("#SelOrderID").val()
+                web += "&SelOrderID=" + orderid
+            }
+            if ($("#SelPhone").val() != null) {
+                const phone = $("#SelPhone").val()
+                web += "&SelPhone=" + phone
+            }
+            if ($("#SelEmail").val() != null) {
+                const email = $("#SelEmail").val()
+                web += "&SelEmail=" + email
+            }
+          
+            const ordermin = $("#SelOrderMin").val()
+            web += "&SelOrderMin=" + ordermin
+            const ordermax = $("#SelOrderMax").val()
+            web += "&SelOrderMax=" + ordermax
+            
+           
+           
+
+            window.open(web)
+        
+        })
+    </script>
+
+
+}

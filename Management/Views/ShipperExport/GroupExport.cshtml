@@ -1,0 +1,70 @@
+﻿@model List< Management.ViewModel.COrderViewModel >
+@{
+    ViewData["Title"] = "GroupExport";
+}
+
+<h1>匯出期間</h1>
+<form style="margin:5px" name="groupconditions" id="groupconditions">
+    <capital style="font-weight:700">搜尋條件</capital>
+    <div class="input-group" style="margin-top:3px">
+        <div class="input-group-prepend">
+            <span class="input-group-text">訂貨日期</span>
+        </div>
+        <input type="date" aria-label="SelOrderMin" id="SelOrderMin" name="SelOrderMin" class="form-control col-2" placeholder="開始期間" value="@DateTime.Today.AddMonths(-2).ToString("yyyy-MM-dd")">
+        <input type="date" aria-label="SelOrderMax" id="SelOrderMax" name="SelOrderMax" class="form-control col-2" placeholder="結束期間" value="@DateTime.Today.AddMinutes(1).ToString("yyyy-MM-dd")">
+
+        <div class="input-group-prepend">
+            <span class="input-group-text">出貨日期</span>
+        </div>
+        <input type="date" aria-label="SelDelMin" id="SelDelMin" name="SelDelMin" class="form-control col-2" placeholder="開始期間" disabled="disabled" value="@(DateTime.Today.AddMonths(-2).ToString("yyyy-MM-dd"))">
+        <input type="date" aria-label="SelDelMax" id="SelDelMax" name="SelDelMax" class="form-control col-2" placeholder="結束期間" disabled="disabled" value="@(DateTime.Today.AddMinutes(1).ToString("yyyy-MM-dd"))">
+
+    </div>
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <select id="SelOrderStatus" class="btn btn-light" name="SelOrderStatus">
+                <option value="訂單狀態" selected="selected">訂單狀態</option>
+                <option value="處理中">處理中</option>
+                <option value="出貨中">出貨中</option>
+                <option value="已送達">已送達</option>
+                <option value="已取消">已取消</option>
+            </select>
+        </div>
+        <div class="input-group-prepend">
+            <select id="SelRecieveMethod" class="btn btn-light" name="SelRecieveMethod">
+                <option value="送貨方式" selected="selected">送貨方式</option>
+                <option value="宅配到府">宅配到府</option>
+                <option value="超商取件">超商取件</option>
+            </select>
+        </div>
+
+        <input type="text" aria-label="SelOrderID" id="SelOrderID" name="SelOrderID" class="form-control col-2" placeholder="訂單編號" value="">
+        <input type="text" aria-label="SelMember" id="SelMember" name="SelMember" class="form-control col-2" placeholder="會員姓名" value="">
+        <input type="text" aria-label="SelPhone" id="SelPhone" name="SelPhone" class="form-control col-2" placeholder="電話/手機號碼" value="">
+
+    </div>
+    <div class="input-group">
+        <input type="button" value="搜尋" class="btn btn-outline-secondary col-2" id="btnsearch" />
+        <input type="button" value="清除搜尋條件" class="btn btn-outline-secondary col-2" id="btnclear" />
+    </div>
+</form>
+<div style="margin-top:5px">
+    <div>
+        <table class="table table-hover" style="text-align:center" id="datatablesSimple">
+            <thead>
+                <tr>
+                    <th>序號</th>
+                    <th>訂單日期</th>
+                    <th>訂單編號</th>
+                    <th>會員編號</th>
+                    <th>宅配縣市</th>
+                    <th>付款方式</th>
+                    <th>消費金額</th>
+                    <th>出貨日期</th>
+                    <th>訂單狀態</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>

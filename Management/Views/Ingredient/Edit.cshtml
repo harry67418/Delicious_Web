@@ -1,0 +1,232 @@
+﻿@model Management.ViewModel.CIngredientItemViewModel
+@{
+    ViewData["Title"] = "編輯商品";
+}
+<style>
+        /* div {
+        overflow: auto;
+        width: 100%;
+        height: 108px;  固定高度
+        }
+    */
+    td, th {
+        border-top: 1px solid gray;
+        border-bottom: 1px solid gray;
+        width: 100px;
+        height: 30px;
+    }
+
+        th {
+            border-bottom: 3px solid black;
+            background-color: white;
+        }
+
+
+        table {
+            table-layout: fixed;
+           /* width: 200px; *//*固定寬度 */
+        }
+
+        td:first-child, th:first-child {
+            position: sticky;
+            left: 0; /*首行永遠固定於左 */
+
+            z-index: 1;
+            background-color: white;
+        }
+
+        thead tr th {
+            position: sticky;
+            top: 0; /*列首永遠固定於上 */
+        }
+
+        th:first-child {
+            z-index: 2;
+            background-color: white;
+        }
+</style>
+@*<div class="returnheader">
+   
+</div>*@
+
+<div class="row">
+   
+    <div class="returnbody col-6 col-xl-6 col-md-6 mb-4">
+        <h5 class="returntitle" id="staticBackdropLabel">食材商品明細</h5>
+        <form id="addForm" name="tform" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="IngredientID" id="IngredientID" value="@Model.IngredientId">
+
+            <div class="form-group">
+                <label for="Ingredient">商品名稱</label>
+                <input type="text" class="form-control" id="Ingredient" name="Ingredient"
+                       placeholder="商品名稱" value="@Model.Ingredient">
+            </div>
+            <div class="form-group">
+                <label for="IngredientCategoryID">食材種類</label>
+                <select class="form-control" id="IngredientCategoryID" name="IngredientCategoryID">
+                    @{
+
+                        foreach (var item in Model.CatIdList)
+                        {
+                            if (item.IngredientCategoryId == Model.IngredientCategoryID)
+                            {
+                                <option value=@item.IngredientCategoryId selected="selected">@item.IngredientCategory</option>
+                            }
+                            else
+                            {
+                                <option value=@item.IngredientCategoryId>@item.IngredientCategory</option>
+                            }
+
+
+                        }
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="IngredientUnit">商品單位</label>
+                <input type="text" class="form-control" id="IngredientUnit" name="IngredientUnit"
+                       placeholder="商品單位" value="@Model.IngredientUnit">
+            </div>
+            <div class="form-group">
+                <label for="Price">食材售價</label>
+                <input type="text" class="form-control" id="Price" name="Price"
+                       placeholder="價格" value="@Model.Price">
+            </div>
+            <div class="form-group">
+                <label for="AmountInStore">食材庫存</label>
+                <input type="text" class="form-control" id="AmountInStore" name="AmountInStore"
+                       placeholder="庫存量" value="@Model.AmountInStore">
+            </div>
+            <div class="form-group">
+                <label for="MerchandiseDescription">商品描述</label>
+                <input type="text" class="form-control" id="MerchandiseDescription" name="MerchandiseDescription"
+                       placeholder="商品描述" value="@Model.MerchandiseDescription">
+            </div>
+            <div class="form-group">
+                @*<input type="checkbox" id="InStoreOrNot" name="InStoreOrNot" checked=@Model.InStoreOrNot />*@
+
+                @Html.CheckBoxFor(m => m.InStoreOrNot)
+                <label for="InStoreOrNot">是否販售</label>
+            </div>
+            <div class="form-group">
+                <input type="file" id="FormfilePic" name="FormfilePic" />
+            </div>
+            <div class="form-group">
+                <img id="ShowPic" name="ShowPic" style="width:300px;height:200px" src="/img/IngredientPic/@Model.MerchadisePicture" />
+            </div>
+            <button type="submit" class="btn btn-primary" id="submitbtn">確定修改</button>
+
+            <button class="btn btn-secondary"> @Html.ActionLink("取消", "SessionDemoSend", "Ingredient")</button>
+        </form>
+    </div>
+
+
+
+    <div class="col-6 col-xl-6 col-md-6 mb-4 justify-content-center border-left">
+        <h5 class="justify-content-around">訂單紀錄</h5>
+        <div style="overflow:auto;height:250px">
+            <table id="Ingdetail" class="text-center col-6 table-hover">
+                <thead>
+                    <tr>
+                        <th>訂單序號</th>
+                        <th>訂單日期</th>
+                        <th>訂單編號</th>
+                        <th>數量</th>
+                        <th>售價</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <br />
+        <br />
+        <div class="align-content-center">
+            <h5 class="justify-content-around">食譜紀錄</h5>
+            <div style="overflow:auto;height:250px;">
+                <table id="Recdetail" class="text-center col-6 table-hover">
+                    <thead>
+                        <tr>
+                            <th>食譜序號</th>
+                            <th>發表日期</th>
+                            <th>食譜編號</th>
+                            <th>食譜名稱</th>
+
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+@section Scripts{
+
+    <script>
+        const docfrag = $(document.createDocumentFragment())
+        const picupload = document.querySelector("#FormfilePic")
+        const picshow = document.querySelector("#ShowPic")
+
+        picupload.onchange = function (e) {
+            if (picupload.files && picupload.files[0]) {
+                picshow.src = URL.createObjectURL(picupload.files[0])
+            }
+
+        }
+        Ingdetail()
+        async function Ingdetail() {
+            var IngID = $("#IngredientID").val()
+            var response = await fetch('/Ingredient/Ingdetail/?IngID=' + IngID)
+            var data = await response.json()
+            var count = 0
+            console.log(data)
+            data.forEach(items => {
+                count = count + 1
+                var date = items.orderDate.substring(0, 10).replace('-', '/').replace('-', '/')
+                const tID1 = $('<td></td>').text(count)
+                console.log(tID1)
+                const tID2 = $('<td></td>').text(date)
+                const tID3 = $('<td class="orderid"></td>').text(items.orderiD)
+                const tID4 = $('<td></td>').text(items.inCartQuantity)
+                const tID5 = $('<td></td>').text("$"+items.price)
+                const row = $('<tr></tr>').append([tID1], [tID2], [tID3], [tID4], [tID5])
+                row.on("click", function () {
+                    orderid = $(this).find(".orderid").text()
+                    window.open("/Order/Index/?orderiD=" + orderid)
+                })
+                docfrag.append(row)
+            })
+
+            $('#Ingdetail>tbody').html(docfrag)
+        }
+        Recdetail()
+        async function Recdetail() {
+            var IngID = $("#IngredientID").val()
+            var response = await fetch('/Ingredient/Recdetail/?IngID=' + IngID)
+            var data = await response.json()
+            var count = 0
+            console.log(data)
+            data.forEach(items => {
+                count = count + 1
+                var date = items.postTime.substring(0, 10).replace('-', '/').replace('-', '/')
+                const tID1 = $('<td></td>').text(count)
+                console.log(tID1)
+                const tID2 = $('<td></td>').text(date)
+                const tID3 = $('<td class="rid"></td>').text(items.recipeId)
+                const tID4 = $('<td></td>').text(items.recipeName)
+               
+
+                const row = $('<tr></tr>').append([tID1], [tID2], [tID3], [tID4])
+                row.on("click", function ()
+                {
+                    rid = $(this).find(".rid").text()
+                    window.open("/Recipe/Index/?recipeid="+rid)
+                })
+                docfrag.append(row)
+            })
+
+            $('#Recdetail>tbody').html(docfrag)
+        }
+    </script>
+
+}

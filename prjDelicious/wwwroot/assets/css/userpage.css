@@ -1,0 +1,45 @@
+﻿#figure {
+    width: 200px;
+    height: 200px;
+    border: 1px solid #808080;
+    padding: 5PX;
+}
+#userinfo{
+    border-bottom:1px solid #808080;
+    padding-bottom:30px;
+    margin-top:30px;
+}
+    #userdata p {
+        margin-right:10px;
+    }
+#info {
+    border: 1px solid #ffe1c8;
+    border-radius: 10px;
+    padding: 20px
+}
+#nickname {
+    margin-bottom:15px;
+}
+
+#rankname {
+    margin-top:15px;
+}
+.follow-modal,.followed-modal {
+    max-height: 305px;
+    overflow: auto;
+}
+
+.follow-row {
+    border-bottom: 1px solid #efefef
+}
+.follow-col {
+    height: 70px;
+    line-height: 70px;
+}
+    .follow-col img {
+        margin-right:20px;
+        width:50px;
+        height:50px;
+    }
+    .follow-col a {
+    }

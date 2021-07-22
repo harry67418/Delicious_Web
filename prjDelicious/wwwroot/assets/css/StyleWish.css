@@ -1,0 +1,42 @@
+﻿*{
+    box-sizing:border-box;
+}
+body{
+    margin:0px;
+    padding:0px;
+    /*background-color:#ecfaff;*/
+}
+.accordion{
+    width:1000px;
+    margin:80px auto 0;
+}
+.accordion label{
+    display:block;
+    width:100%;   
+    text-align:center;
+    border-radius:5px;
+    background-color:#ccc;
+    margin-top:10px;
+    padding:12px 12px;    
+    cursor:pointer;
+    position:relative;
+    height:50px;
+    
+}
+.btnstyle {
+     position:absolute;
+     right:20px; 
+     top:6px;
+}
+.content{
+    height:0px;
+    background-color:#fff;
+    overflow:hidden;
+    transition:0.5s
+}
+input[type=radio]:checked + .content {
+    height: 550px;
+}
+input[type=radio] {
+    display: none;
+}

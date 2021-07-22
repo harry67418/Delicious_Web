@@ -1,0 +1,123 @@
+﻿@model prjDelicious.ViewModel.CShopperInfoViewModel
+@using Microsoft.AspNetCore.Http
+@using prjDelicious.ViewModel
+@{
+    ViewData["Title"] = "Categorydata";
+    var login_id = Context.Session.GetString(CDictionary.CURRENT_LOGINED_USERID);
+}
+
+
+<div class="col-12 card-body h4 text-center" style="color:darkblue">最新公告&nbsp<i class="fas fa-bullhorn" style="color:orange"></i>&nbsp梨山高麗菜新鮮採收&nbsp<i class="fas fa-bullhorn" style="color:orange"></i> &nbsp龍眼當季盛產&nbsp<i class="fas fa-bullhorn" style="color:orange"></i>&nbsp一日一蘋果 健康你跟我&nbsp</div>
+@if (Convert.ToInt32(login_id) != 0)
+{ <div class="col-6 card-body h4 text-center"><i class="fas fa-bullhorn" style="color:orange"></i><a href="/WishList/List/?memberid=@login_id">願望清單實現你的大廚夢</a></div>}
+else
+{<div class="col-6 card-body h4 text-center"><i class="fas fa-bullhorn" style="color:orange"></i><a href="#">願望清單實現你的大廚夢</a></div> }
+<!-- Section-->
+<section class="py-5">
+    <a href="/Shopper/Checkout" class="btn btn-outline-info col-1" style="position:fixed;right: 0;top:160px">結帳去<i class="fas fa-shopping-cart"></i></a>
+    <div class="dropdown shopcart">
+        <input type="button" class="btn btn-warning dropdown-toggle" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false" style="position:fixed;right: 0;top:280px;z-index:1" value="購物清單"/>
+          
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+            <li>尚未加入品項</li>
+        </ul>
+    </div>
+    <div class=" row col-1" style="position:fixed;left: 0;top:160px;z-index:1">
+        <a class="btn btn-outline-info" href="/Shopper/index">全部種類</a>
+        @foreach (var item in ViewBag.catlist)
+        {
+
+            <a class="btn btn-outline-info" href="/Shopper/Categorydata/?CatID=@item.IngredientCategoryId">@item.IngredientCategory</a>
+        }
+    </div>
+    <div class="container px-4 px-lg-5 mt-5">
+        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+            @foreach (var item in Model.ListofMerchadises)
+            {
+                var pic = "";
+                if (item.PicList.Count >= 1)
+                { pic = item.PicList[0]; }
+                if (pic == "")
+                { pic = "https://deliciousnetmanagement.azurewebsites.net/img/IngredientPic/defaultpic.jpg"; }
+
+
+                <div class="col mb-5 ">
+                    <div class="card h-100 shadow-sm" style="border-color:transparent">
+                        <img class="card-img-top rounded-circle shadow" width="300" height="200" src="@pic" alt="@item.Ingredient" />
+
+                        <!-- Product details-->
+                        <div class="card-body p-4">
+                            <div class="text-center">
+                                <!-- Product name-->
+                                <h5 class="fw-bolder">@item.Ingredient</h5>
+                                <!-- Product price-->
+                                $ @item.Price/@item.IngredientUnit
+                            </div>
+                        </div>
+                        <!-- Product actions-->
+                        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                            <div class="text-center"><input class="qtyofcart" type="number" value="0" min="0" max="@item.AmountInStore" style="width: 55px;height:40px; margin-right:5px" /><button class="btn btn-outline-warning mt-auto cart" href="#" id="@item.IngredientId"><i class="fas fa-shopping-cart" style="font-size:25px;"></i></button></div>
+                            <div class="text-center"><a class="btn btn-outline-warning" href="/Shopper/MerchadiseDetail/?Ingid=@item.IngredientId" style="margin-top:10px">查看商品明細</a></div>
+                        </div>
+                    </div>
+                </div>}
+
+        </div>
+    </div>
+</section>
+
+@section Scripts{
+
+    <script>
+        const docfrag = $(document.createDocumentFragment())
+        $("body").on('click', ".cart", addtosession)
+        fetch("/AddingCartAPI/AddToCart/?ingid=0&qty=0").then(response => { return response.json() }).then(response => {
+            var count = 0
+            response.forEach(data => {
+                count++
+                console.log("產品編號" + data.ingid + "數量" + data.cartQty)
+                const lis = $("<li></li>").text("商品:" + data.ingredient + "數量:" + data.cartQty + "價格$" + data.unitprice)
+                docfrag.append(lis)
+
+            })
+            $("#dropdownMenuButton1").val("購物清單(" + count + ")")
+            $(".shopcart>ul").html(docfrag)
+        })
+        function addtosession() {
+
+            const ingid = $(this).attr('id')
+            const qty = $(this).closest("div").find(".qtyofcart").val()
+            const maxvalue = $(this).closest("div").find(".qtyofcart").attr('max')
+            if (qty <= 0) { alert('數量為0,不能加入') }
+            else if (Number(qty) >= Number(maxvalue)) { alert('加入數量不能大於現有庫存') }
+            else {
+                $.ajax({
+                    url: "/AddingCartAPI/AddToCart",
+                    data: { "ingid": ingid, "qty": qty },
+                    type: 'Get'
+                }).done(
+
+                    response => {
+                        alert('已加入購物車')
+                        $(this).closest("div").find(".qtyofcart").val(0)
+                        var count=0
+                        response.forEach(data => {
+                            count++
+                            console.log("產品編號" + data.ingid + "數量" + data.cartQty)
+                            const lis = $("<li></li>").text("商品:" + data.ingredient + "數量:" + data.cartQty + "價格$" + data.unitprice)
+                            docfrag.append(lis)
+                
+                        })
+                        $("#dropdownMenuButton1").val("購物清單("+count+")")
+                        $(".shopcart>ul").html(docfrag)
+                    }
+                ).fail(
+                    error => { alert('加入購物車失敗,請稍後嘗試') }
+                )
+            }
+
+        }
+
+    </script>
+
+}

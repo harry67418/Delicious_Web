@@ -1,0 +1,46 @@
+﻿.bgmain {
+    background-color: #344986;
+    Color: #F6EFE3
+}
+
+.bgmainbar {
+    background-color: #63A1D0;
+    Color: #F9F7F7
+}
+
+
+
+.bgbar {
+    background-color: #4EC9DF;
+    Color: #F9F7F7
+}
+
+.card:hover {
+    background-color: #BCDBDF;
+}
+.wordweight {
+ font-weight:800;
+}
+
+.bgbtn {
+    background-color:#FCF9EA;
+    border:2px solid #AA4A30;
+    border-radius:5px;
+    color:#112D4E;
+
+}
+.bgbtn:hover {
+    background-color: #EDCFA9;
+}
+.hidepic {
+    display: none
+}
+
+.img1 {
+    height: 100px;
+    width: 120px;
+}
+.wordcolor {
+    color: #4EC9DF;
+}
+

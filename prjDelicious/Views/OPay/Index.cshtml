@@ -1,0 +1,18 @@
+﻿@{
+    ViewData["Title"] = "Index";
+    Layout = "_Layout_NoSession";
+}
+
+
+<button class="opay" onclick="test()">歐付寶付款</button>
+
+<script>
+    function test() {
+        window.open(`/Opay/SetParameter`, "歐付寶付款頁面", config = 'height=500,width=500');
+    }
+</script>
+
+
+
+
+

@@ -1,0 +1,184 @@
+﻿@using Microsoft.AspNetCore.Http
+@using prjDelicious.ViewModel
+@model prjDelicious.ViewModel.CUserSettingViewModel
+
+@{
+    ViewData["Title"] = "Setting";
+}
+
+@section Style{
+    <link href="/assets/css/setting.css" rel="stylesheet">
+}
+<section class="align-items-center">
+    <div class="container" id="userinfo">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="single category">
+                    <h2 class="side-title">會員設定</h2>
+                    <ul class="list-unstyled">
+                        <li id="li-1"><a href="/UserPage/Setting?id=@Context.Session.GetString(CDictionary.CURRENT_LOGINED_USERID)" title="">編輯個人檔案</a></li>
+                        <li id="li-2"><a href="/UserPage/ChangePassword?id=@Context.Session.GetString(CDictionary.CURRENT_LOGINED_USERID)" title="">更改密碼</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <form asp-action="Setting" method="post" enctype="multipart/form-data" name="formdata">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group" hidden>
+                        <label asp-for="MemberId" class="control-label"></label>
+                        <input asp-for="MemberId" class="form-control" />
+                        <span asp-validation-for="MemberId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <img src="@Model.FigureSrc@Model.Figure" class="control-label rounded-circle" id="figure" />
+                        <input type="file" id="selfigure" name="photo" value="更換頭貼"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">帳號</label>
+                        <label class="control-label">@Model._member.AccountName</label>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Nickname" class="control-label"></label>
+                        <input asp-for="Nickname" class="form-control required nickname" maxlength="20"/>
+                        <span asp-validation-for="Nickname" class="text-danger"></span>
+                        <span class="text-danger error"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="MemberName" class="control-label"></label>
+                        <input asp-for="MemberName" class="form-control required membername" maxlength="4" />
+                        <span asp-validation-for="MemberName" class="text-danger"></span>
+                        <span class="text-danger error"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Email" class="control-label"></label>
+                        <input asp-for="Email" class="form-control required" />
+                        @if (Model._member.ConfirmedOrNotEmail == false)
+                        {
+                        <a href="/UserPage/EmailConfirm?id=@Model.MemberId">未驗證(點擊驗證)</a>
+                        }
+                        else
+                        {
+                        <small>已驗證</small>
+                        }
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                        <span class="text-danger error"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="CellNumber" class="control-label"></label>
+                        <input asp-for="CellNumber" class="form-control" />
+                        <span asp-validation-for="CellNumber" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Info" class="control-label"></label>
+                        <textarea asp-for="Info" class="form-control info" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 300px"></textarea>
+                        <span asp-validation-for="Info" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Gender" class="control-label"></label>
+                        <select asp-for="Gender" class="gender">
+                            <option disabled selected>請選擇性別</option>
+                            <option value="男">男</option>
+                            <option value="女">女</option>
+                            <option value="不願透漏">不願透漏</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Birthday" class="control-label"></label>
+                        <p><input asp-for="Birthday" type="date" class="form-control date" id="datepicker" /></p>
+                        <span asp-validation-for="Birthday" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">註冊日期</label>
+                        <label>@Model._member.RegisterTime.ToString("yyyy/MM/dd")</label>
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" value="儲存" class="btn btn-primary" id="send" />
+                    </div>
+                </form>
+                <div class="loadingdiv" id="loading" style="display: none">
+                    <img src="/assets/img/loading.gif" />
+                </div>
+            </div>
+            <div class="col-4">
+                <input value="demo" type="button" class="btn btn-outline-info btn-sm demo shadow-none" style="width:70px;margin-top:100px" />
+            </div>
+        </div>
+    </div>
+</section>
+@section Scripts {
+    <script src="/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+        $(".demo").click(function () {
+            $(".nickname").val("詹母湯");
+            $(".membername").val("詹阿花");
+            $(".info").val("我好想學做菜阿阿阿阿,目標成為像型男大主廚的詹姆士一樣厲害><")
+            $(".gender option:nth-child(3)").attr("selected", true);
+            $(".date").val("1996-03-31")
+        })
+
+        const selfigure = document.querySelector("#selfigure")
+        const figure = document.querySelector("#figure")
+
+        selfigure.onchange = function (e) {
+            if (selfigure.files && selfigure.files[0]) {
+                figure.src = URL.createObjectURL(selfigure.files[0])
+            }
+        }
+
+        $(".required").keyup(function () {
+            let error = $(this).closest(".form-group").children(".error")
+            console.log($(this).val())
+            console.log($(this).val().indexOf(" "))
+            if ($(this).val().indexOf(" ") != -1 ||$(this).val()=="") {
+                error.text("此欄位必填,且不可有空白字元")
+            }
+            else {
+                error.text("");
+            }
+        })
+
+        $("#send").click(function (evt) {
+            evt.preventDefault();
+
+            let hasnull = false;
+            $("form .text-danger").each(function () {  //遍历input标签，判断是否有錯誤訊息
+                if ($(this).text() != "") {
+                    hasnull = true;
+                    alert("請填入正確資訊")
+                }
+            })
+
+            if (hasnull == false) {
+                const data = new FormData(document.formdata)
+                $.ajax({
+                    beforeSend: function () {
+                        $('#loading').css("display", "");
+                    },
+                    url: '/UserPage/Setting',
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    type: "post",
+                    data: data,
+                    success: function (data) {
+                        if (data) {
+                            alert("修改成功");
+                            window.location.reload();
+                        }
+                        else {
+                            alert("修改失敗");
+                            window.location.reload();
+                        }
+                    },
+                    complete: function () {
+                        $('#loading').css("display", "none");
+                    },
+                    error: function (data) {
+                        alert(data);
+                    }
+                })
+            }
+        })
+    </script>
+}

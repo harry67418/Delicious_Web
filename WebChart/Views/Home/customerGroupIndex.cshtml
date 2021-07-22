@@ -1,0 +1,104 @@
+﻿
+@{
+    ViewData["Title"] = "customerGroupIndex";
+}
+
+<h1>customerGroupIndex</h1>
+
+
+<select id="group" hidden>
+    <option>線上客服</option>
+
+</select>
+<button type="button" id="addGroupBtn">呼叫客服</button>
+<input id="privatename" type="text" value="管理員" hidden>
+<br>
+姓名：
+<input id="name" type="text">
+<br>
+訊息
+<input id="msg" type="text">
+<br>
+
+<button type="Button" id="submitprivateBtn">送出</button>
+<br>
+<div id="msgDiv" style="width:300px;height:250px;overflow:auto;"></div>
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+
+
+@section Scripts{
+    <script>
+
+        "use strict";
+
+        var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+       
+        document.getElementById("addGroupBtn").disabled = true;
+        document.getElementById("submitprivateBtn").disabled = true;
+
+        connection.on("RecAddGroupMsg", function (message, _ConnectionId) {
+            if (message != "") {
+                var msg = message;
+                var li = document.createElement("li");
+                li.textContent = msg;
+                document.getElementById("msgDiv").appendChild(li);
+            }
+            else if (_ConnectionId != "") {
+                var msg1 = message;
+                var li1 = document.createElement("li");
+                li1.textContent = _ConnectionId;
+                document.getElementById("m_list").appendChild(li1);
+            }
+        });
+
+        connection.start().then(function () {
+
+           
+            document.getElementById("addGroupBtn").disabled = false;
+            document.getElementById("submitprivateBtn").disabled = false;
+
+        }).catch(function (err) {
+            return console.error(err.toString());
+        });
+
+        document.getElementById("addGroupBtn").addEventListener("click", function (event) {
+            var user = document.getElementById("name").value;
+            var group = document.getElementById("group").value;
+            connection.invoke("AddGroup", group, user).catch(function (err) {
+                return console.error(err.toString());
+            });
+            event.preventDefault();
+        });
+        // 群組訊息接收事件
+        connection.on("ReceiveGroupMessage", function (groupName, user, message) {
+
+            var msg = `[群組訊息(${groupName})]${user}：${message}`;
+            var li = document.createElement("li");
+            li.textContent = msg;
+            document.getElementById("msgDiv").appendChild(li);
+
+
+        });
+
+        // 私聊訊息Button事件
+        connection.on("ReceiveprivateMessage", function (user, message) {
+            console.log(user)
+            var msg = `私聊訊息 ${user}：${message}`;
+            var li = document.createElement("li");
+            li.textContent = msg;
+            document.getElementById("msgDiv").appendChild(li);
+        });
+
+        document.getElementById("submitprivateBtn").addEventListener("click", function (e) {
+            var user = document.getElementById("name").value;
+            var to_user = document.getElementById("privatename").value;
+            var message = document.getElementById("msg").value;
+            console.log(user)
+            connection.invoke("SendPrivateMessage", to_user, message, user).catch(function (err) {
+                return console.error(err.toString());
+            });
+        });
+
+
+    </script>
+}

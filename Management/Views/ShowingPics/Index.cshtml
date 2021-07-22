@@ -1,0 +1,112 @@
+﻿@model IEnumerable<Management.Models.TshowingPic>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="card-header text-center bg-transparent">
+
+    <div class="h3 bgmainbar wordweight">輪播牆</div>
+    <p class="bgbar">可選擇秀出最多5張圖片</p>
+</div>
+
+    <div class="btn btn-outline-info float-lg-right">
+        <a asp-action="Create">新增輪播牆</a>
+    </div>
+    @*<table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        序號
+                    </th>
+                    <th>
+                        圖片標題
+                    </th>
+                    <th>
+                        圖片路徑
+                    </th>
+                    <th>
+                        圖片描述
+                    </th>
+                    <th>
+                        外部連結
+                    </th>
+                    <th>
+                        圖片是否播放
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+        @{ var count = 0;
+            foreach (var item in Model) {
+                 count= count + 1;
+                <tr>
+                    <td>
+                       @count
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ShowingPicsTitle)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ShowingPicsPathRoad)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ShowingPicsDescription)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ShowingPicsHyperLink)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ShowingPicsIsShowOrNot)
+                    </td>
+                    <td>
+                        @Html.ActionLink("編輯", "Edit", new { ShowingPicsId = item.ShowingPicsId })|
+                        @Html.ActionLink("刪除", "Delete", new { ShowingPicsId = item.ShowingPicsId },
+                    new { onclick = "return confirm('確定要刪除這個項目嗎?');" })
+                    </td>
+                </tr>
+                } }
+            </tbody>
+        </table>*@
+    <section class="py-5">
+        <div class="container px-4 px-lg-5 mt-5">
+            <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+                @{
+                    var count = 0;
+                    foreach (var item in Model)
+
+                    {
+
+
+                        <div class="col mb-5">
+                            <div class="card h-100">
+                                <img class="card-img-top" width="300" height="200" src="/img/ShowingPic/@item.ShowingPicsPathRoad" alt="" />
+
+                                <!-- Product details-->
+                                <div class="card-body p-2">
+                                    <div class="text-center">
+                                        <p><h5 class="fw-bolder">輪播牆圖片標題</h5></p>
+                                        <p> @item.ShowingPicsTitle </p>
+                                        <p><h5 class="fw-bolder">輪播牆圖片描述</h5></p>
+                                        <p>@item.ShowingPicsDescription</p>
+                                        <p><span>@Html.DisplayFor(modelItem => item.ShowingPicsIsShowOrNot) 圖片是否秀出 </span> </p>
+                                        <p><h5 class="fw-bolder">輪播牆圖片分享 </h5></p>
+                                        <p><a href="@item.ShowingPicsHyperLink">@item.ShowingPicsHyperLink</a></p>
+
+                                    </div>
+                                </div>
+                                <!-- Product actions-->
+                                <div class="card-footer bg-transparent text-center">
+                                    <div class="text-left btn btn-outline-primary">@Html.ActionLink("編輯", "Edit", new { ShowingPicsId = item.ShowingPicsId })</div>
+                                    <div class="text-right btn btn-outline-danger"> @Html.ActionLink("刪除", "Delete", new { ShowingPicsId = item.ShowingPicsId }, new { onclick = "return confirm('確定要刪除這個項目嗎?');" })</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    }
+                }
+
+            </div>
+        </div>
+    </section>

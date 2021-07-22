@@ -1,0 +1,104 @@
+﻿@page
+    <form method="post" action="~/api/ImageInput" name="memberInfo">
+        <div class="container">
+            <div class="drop" id="Picturedrop">
+
+            </div>
+            <div class="row">&nbsp;</div>
+            <div class="row">
+                <div class="col-2">User</div>
+                <div class="col-4">
+                    <input type="text" id="userInput" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-2">Message</div>
+                <div class="col-4">
+                    <input type="text" id="messageInput" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-2">IMG</div>
+                <div class="col-4">
+                    <label for="imageInput">選擇檔案</label>
+                    <input type="file" class="form-control-file" id="imageInput" name="Photo">
+                </div>
+            </div>
+
+
+            <div class="row">&nbsp;</div>
+            <div class="row">
+                <div class="col-6">
+                    <input type="button" id="sendimgButton" value="Send img Message" />
+                    <input type="button" id="sendButton" value="Send Message" />
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="row">
+        <div class="col-12">
+            <hr />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <ul id="messagesList"></ul>
+        </div>
+    </div>
+    <script src="~/js/signalr/dist/browser/signalr.js"></script>
+    <script src="~/js/chat.js"></script>
+    @section Scripts{
+        <script>
+            //document.querySelector(".imageInput").addEventListener("change", function () { });
+
+
+            document.querySelector(".drop").addEventListener("dragover", dragoverHandler);
+            document.querySelector(".drop").addEventListener("drop", dropHandler);
+            function dragoverHandler(e) {
+                e.preventDefault();
+            }
+
+            function dropHandler(e) {
+                e.preventDefault();
+                var theFiles = e.dataTransfer.files;
+                for (var i = 0; i < theFiles.length; i++) {
+                    var theFile = theFiles[i];
+                    var reader = new FileReader();
+                    reader.addEventListener("load", function (e) {
+                        var fileContent = e.target.result;
+                        var imgObj = document.createElement("img");
+                        imgObj.setAttribute("src", fileContent);
+                        imgObj.setAttribute("id", "cimg1");
+                        imgObj.setAttribute("width", "90px");
+                        imgObj.setAttribute("height", "90px");                        
+                        document.querySelector("#Picturedrop").appendChild(imgObj);
+
+                    });
+                    reader.readAsDataURL(theFile);
+
+
+
+                }
+            }
+        </script>
+    }
+    @section Styles{
+        <style>
+            .drop {
+                border: 2px #ccc dotted;
+                width: 100px;
+                height: 100px;
+                overflow: auto;
+                margin: 10px 10px 10px 10px;
+            }
+
+            .myactive {
+                opacity: 0.2;
+            }
+
+            .myhover {
+                border: 5px solid red;
+            }
+        </style>
+    }

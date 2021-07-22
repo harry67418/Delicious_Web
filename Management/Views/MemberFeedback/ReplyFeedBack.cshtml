@@ -1,0 +1,37 @@
+﻿@model Management.Models.Tfeedback
+
+@{
+    ViewData["Title"] = "ReplyFeedBack";
+}
+
+<h1>客服回復</h1>
+
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="ReplyFeedBack">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+               
+                <input asp-for="FeedbackId" class ="form-control" asp-items="ViewBag.FeedbackId" hidden />
+            </div>            
+            <div class="form-group">
+                <label asp-for="FeedbackContent" class="control-label">回覆內容</label>
+                <input asp-for="FeedbackContent" class="form-control" />
+                <span asp-validation-for="FeedbackContent" class="text-danger"></span>
+            </div>           
+            <div class="form-group">
+                <input type="submit" value="送出" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">回上一頁</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

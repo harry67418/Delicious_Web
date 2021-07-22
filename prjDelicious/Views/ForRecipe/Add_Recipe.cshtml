@@ -1,0 +1,433 @@
+﻿@model prjDelicious.ViewModel.CRecipeViewModel
+
+@{
+    ViewData["Title"] = "Add_Recipe";
+}
+
+<section class="align-items-center">
+    <form enctype="multipart/form-data" method="post" name="memberInfo" asp-action="Add_Recipe" id="commentForm" onsubmit="return check()">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="container" style=" border: double; border-width:10px; border-color: #f5b971; border-radius: 10px;">
+            <div style="display: flex; justify-content: flex-end; margin-top:10px">
+                <button type="button" class="btn btn-success" id="demo">Demo_Add</button>
+            </div>
+            <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 5px; padding-top:20px; margin-top:20px">
+                <input class="form-control" id="recipeName" asp-for="recipeName" placeholder="請填寫食譜標題" style="width:500px" />
+            </div>
+            <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 5px">
+                <span asp-validation-for="recipeName" class="text-danger"></span>
+            </div>
+            <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 10px">
+                <select id="recipeCategory" name="recipeCategoryId" style="border-color: black; width:500px" class="btn btn-light"></select>
+            </div>
+            <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 5px">
+                <input class="form-control" id="recipeVideo" asp-for="recipeVideo" placeholder="請填寫分享連結" style="width:500px" />
+            </div>
+            <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 5px">
+                <span asp-validation-for="recipeVideo" class="text-danger"></span>
+            </div>
+            <div style="display: flex; justify-content: center; align-items: center; margin-top:50px; position:relative; border-radius: 10px;">
+                <img src="~/assets/img/add_recipeIMG.png" width="500" height="400" id="show" style="border-radius: 10px;" />
+                <input type="file" id="openFile" asp-for="recipephoto" accept="image/*" style="position: absolute; top: 0; bottom: 0; left: 0; right: 0; opacity: 0; display: block; width:500px; clear: both; display: block; margin: auto;" />
+            </div>
+            <div style="display: flex; justify-content: center; align-items: center; margin-bottom:50px">
+                <span asp-validation-for="recipephoto" class="text-danger"></span>
+            </div>
+            <div style="display:flex; justify-content: center; align-items: center">
+                <div>
+                    <h3>@Html.DisplayNameFor(model => model.recipeDescription)</h3>
+                    <textarea placeholder="輸入食譜描述" rows="6" cols="40" asp-for="recipeDescription" id="recipeDescription" style="margin-right: 50px; resize: none; border-radius: 10px;"></textarea>
+                    <div>
+                        <span asp-validation-for="recipeDescription" class="text-danger"></span>
+                    </div>
+                </div>
+                <div>
+                    <h3>@Html.DisplayNameFor(model => model.forHowmany)</h3>
+                    <textarea placeholder="輸入供給份數" rows="6" cols="40" asp-for="forHowmany" id="forHowmany" style="margin-right: 50px; resize: none; border-radius: 10px;"></textarea>
+                    <div>
+                        <span asp-validation-for="forHowmany" class="text-danger"></span>
+                    </div>
+                </div>
+                <div>
+                    <h3>@Html.DisplayNameFor(model => model.timeNeed)</h3>
+                    <textarea placeholder="輸入製作時間" rows="6" cols="40" asp-for="timeNeed" id="timeNeed" style="margin-right: 50px; resize: none; border-radius: 10px;"></textarea>
+                    <div>
+                        <span asp-validation-for="timeNeed" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-left:50px">
+                <h3>食材</h3>
+            </div>
+            <div id="ingredientDiv" style="display:flex; justify-content: center; align-items: center">
+                <table class="table table-striped" style="width:1150px; margin-left:-50px; background-color: #EDCFA9">
+                    <thead style="text-align: center">
+                        <tr style="background-color:#e89f71">
+                            <td><h4 style="margin:0px; font-weight:bolder">項目</h4></td>
+                            <td><h4 style="margin:0px; font-weight:bolder">份量</h4></td>
+                        </tr>
+                    </thead>
+                    <tbody style="text-align: center" id="r_ingredient" name="r_ingredient"></tbody>
+                </table>
+            </div>
+            <div style="display: flex; justify-content: center; align-items: center; margin-bottom:10px">
+                <span id="I_errorMsg"></span>
+            </div>
+            <div style="display:flex; justify-content: center; align-items: center">
+                <button type="button" class="btn btn-primary addingredient" style="width:500px">新增食材</button>
+            </div>
+            <div style="margin-left:50px">
+                <h3>步驟</h3>
+            </div>
+            <div id="stepDiv" style="display:flex; justify-content: center; align-items: center">
+                <table class="table table-striped" style="width:1150px; margin-left:-50px">
+                    <tbody style="text-align:left" id="r_step"></tbody>
+                </table>
+            </div>
+            <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 10px">
+                <span id="S_errorMsg"></span>
+            </div>
+            <div style="display:flex; justify-content: center; align-items: center">
+                <button type="button" class="btn btn-primary addstep" style="width:500px">新增步驟</button>
+            </div>
+            <div style="display:flex; justify-content: center; align-items: center; margin-top:50px; margin-bottom:50px">
+                <button type="submit" class="btn btn-primary" id="saverecipe" style="width:250px">確認新增</button>
+                &emsp;&emsp;
+                <button type="button" class="btn btn-dark" id="cancel" style="width:250px" onclick="confirmCancel()">取消新增</button>
+            </div>
+        </div>
+    </form>
+</section>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <link href="~/assets/vendor/chosen/chosen.css" rel="stylesheet" />
+    <script src="~/assets/vendor/chosen/chosen.jquery.js"></script>
+    <script>
+
+        $("#openFile").on("change", function () {   //食譜圖片功能預覽
+            const readFile = new FileReader();
+            const IMG = $("#openFile")[0].files[0];
+            readFile.readAsDataURL(IMG);
+            readFile.onload = function () {
+                const img = $("#show");
+                img.attr("src", this.result);
+            }
+        });
+
+        const _select = document.querySelector("#recipeCategory");    //食譜分類資料灌入
+        async function getrecipeCategory() {
+            let response = await fetch('/ApiRecipePage/RecipeCategoryList')
+            let datas = await response.json()
+            renderrecipeCategory(datas);
+
+        }
+        getrecipeCategory();
+
+        function renderrecipeCategory(datas) {
+            datas.forEach(function (item) {
+                opt = new Option(item.recipeCategory, item.recipeCategoryId);
+                _select.options.add(opt);
+            });
+        };
+
+        //=================(新增食材)================================================
+
+        $(document).on("click", ".addingredient", function () {
+            var i_Num = $("#r_ingredient").children("tr").length;
+            const _tr = document.createElement("tr"); //<tr></tr>
+            const _td = document.createElement("td"); //<td></td>
+            const select01 = `<select class="btn btn-light" id="ingredientCategory${i_Num}" name="list_ingredientRecords[${i_Num}].ingredientCategoryId" style="border-color:black;"></select> `;
+            const select02 = `<select class="btn btn-light" id="ingredient${i_Num}" name="list_ingredientRecords[${i_Num}].ingredientId" style="border-color:black;"></select>`
+            const txt01 = `<input type="text" class="btn btn-light" name="list_ingredientRecords[${i_Num}].ingredient" style="border-color: black;" required>`;
+
+            _td.insertAdjacentHTML("beforeend", select01);
+            _td.insertAdjacentHTML("beforeend", select02);
+
+            async function getingredientCategory() {   //食材資料灌入
+                let response = await fetch('/ApiRecipePage/IngredientCategoryList')
+                let datas = await response.json()
+                renderingredientCategory(datas);
+
+
+                const ingredientCategoryId = _td.firstChild.options[_td.firstChild.selectedIndex].value;
+                if (ingredientCategoryId != 17) {
+                    response = await fetch(`/ApiRecipePage/IngredientList?id=${ingredientCategoryId}`);
+                    datas = await response.json()
+                    renderingredient(datas);
+                    $(`#ingredient${i_Num}`).trigger("chosen:updated");
+                    $(`#ingredient${i_Num}`).chosen({ width: "250px", no_results_text: "查無此項" });
+                }
+            }
+            getingredientCategory();
+
+            function renderingredientCategory(datas) {
+                datas.forEach(function (item) {
+                    opt = new Option(item.ingredientCategory, item.ingredientCategoryId);
+                    _td.firstChild.options.add(opt);
+                });
+            };
+
+
+
+            function renderingredient(datas) { //有空格變2
+                _td.childNodes[2].length = 0;
+                datas.forEach(function (item) {
+                    opt = new Option(item.ingredient, item.ingredientId);
+                    _td.childNodes[2].options.add(opt);
+                })
+            }
+
+            const _td2 = document.createElement("td"); //<td></td>
+            const _input01 = `<input id="ingredientAmountForUse_${i_Num}" name="list_ingredientRecords[${i_Num}].ingredientAmountForUse" type="text" placeholder="請填寫數量" style="border-color: black" class="btn btn-light" required> `;
+            const _input02 = `<input id="unt_${i_Num}" name="list_ingredientRecords[${i_Num}].unt" type="text" placeholder="請填寫單位" style="border-color: black" class="btn btn-light" required> `;
+            const _delete = `<button type="button" class="btn btn-danger deleteingredient" ><i class="fas fa-trash-alt"></i></button>`;
+
+            _td2.insertAdjacentHTML("beforeend", _input01);
+            _td2.insertAdjacentHTML("beforeend", _input02);
+            _td2.insertAdjacentHTML("beforeend", _delete);
+
+            _tr.appendChild(_td);
+            _tr.appendChild(_td2);
+
+            const _tbody = document.querySelector("#r_ingredient");
+            _tbody.append(_tr);
+
+            $(`#ingredientCategory${i_Num}`).on("change", async function () {      //如果是其他就刪除select新增text
+                const ingredientId = $(`#ingredientCategory${i_Num}`).val();
+                var index = $(this)[0].id.substring(18);
+                if (ingredientId == 17) {
+                    $(this).parents('tr').find('select:nth-child(2)').chosen("destroy"); //先移除chosen
+                    $(this).parents('tr').find('select:nth-child(2)').remove();
+                    _td.insertAdjacentHTML("beforeend", `<input type="text" class="btn btn-light" name="list_ingredientRecords[${index}].ingredient" style="border-color: black;" required>`);
+                }
+                else {
+                    if (_td.childNodes[2].tagName == "INPUT") {  //如果選到非新增項目則將text移除加回select
+                        _td.childNodes[2].remove();  //有空格變[2]
+                        _td.insertAdjacentHTML("beforeend", `<select class="btn btn-light" id="ingredient${index}" name="list_ingredientRecords[${index}].ingredientId" style="border-color:black;"></select>`);
+                    }
+                    response = await fetch(`/ApiRecipePage/IngredientList?id=${ingredientId}`);
+                    datas = await response.json();
+                    renderingredient(datas);
+                    $(`#ingredient${index}`).trigger("chosen:updated");
+                    $(`#ingredient${index}`).chosen({ width: "250px", no_results_text: "查無此項" });
+                }
+
+            });
+        });
+
+        $("#r_ingredient").on("click", ".deleteingredient", function () {  //刪除按鈕
+            var max = $("#r_ingredient").children("tr").length;
+            /*console.log(max)*/
+            var index = $(this).parent("td").children("input")[1].id.substring(4);
+            /*console.log(index)*/
+            $(this).closest("tr").remove();
+            if (index < max) {
+                $("#r_ingredient td:first-child >select:first-child").next().each(function (i, e) {
+                    if (e.tagName == "INPUT") {
+                        e.setAttribute("name", name = `list_ingredientRecords[${i}].ingredient`);
+                    }
+                    else {
+                        e.setAttribute("name", `list_ingredientRecords[${i}].ingredientId`);
+                        e.setAttribute("id", `ingredient${i}`);
+                        $(this).next().get(0).setAttribute("id", `ingredient${i}_chosen`);
+                    }
+                });
+                $("#r_ingredient td:first-child >select:first-child").each(function (i, e) {
+                    e.setAttribute("name", `list_ingredientRecords[${i}].ingredientCategoryId`);
+                    e.setAttribute("id", `ingredientCategory${i}`);
+                    $(`#ingredientCategory${i}`).off("change");
+                    $(`#ingredientCategory${i}`).on("change", function () {
+                        var n = $(`#ingredientCategory${i}`).val();
+                        if (n == 17) {
+                            $(this).next().chosen("destroy");
+                            $(this).next().remove();
+                            $(this).after(`<input type="text" class="btn btn-light new_ingredient" name="list_ingredientRecords[${i}].ingredient" style="border-color: black;" required>`);
+                        }
+                        else {
+                            if ($(this).next().prop("tagName") == "INPUT") {
+                                $(this).next().remove();
+                                $(this).after(`<select class="btn btn-light" id="ingredient${i}" name="list_ingredientRecords[${i}].ingredientId" style="border-color:black;"></select>`);
+                            }
+                            (async () => {
+                                const res = await fetch(`/ApiRecipePage/IngredientList?id=${n}`);
+                                const myjson = await res.json();
+                                $(`#ingredient${i}`)[0].options.length = 0;
+                                myjson.forEach(function (item) {
+                                    opt = new Option(item.ingredient, item.ingredientId);
+                                    $(`#ingredient${i}`)[0].options.add(opt);
+                                    $(`#ingredient${i}`).trigger("chosen:updated");
+                                    $(`#ingredient${i}`).chosen({ width: "250px", no_results_text: "查無此項" });
+                                });
+                            })();
+                        }
+                    });
+                });
+                $("#r_ingredient td:nth-child(2)").find("input").even().each(function (i, e) {
+                    e.setAttribute("name", `list_ingredientRecords[${i}].ingredientAmountForUse`);
+                    e.setAttribute("id", `ingredientAmountForUse_${i}`);
+                });
+                $("#r_ingredient td:nth-child(2)").find("input").odd().each(function (i, e) {
+                    e.setAttribute("name", `list_ingredientRecords[${i}].unt`);
+                    e.setAttribute("id", `unt_${i}`)
+                });
+            }
+            max--;
+        });
+
+        //=========(新增步驟區======)================================================
+
+        $(document).on('click', ".addstep", function () {
+            var s_Num = $("#r_step").children("tr").length;
+            const _tr = document.createElement('tr');
+            const _td = document.createElement('td');
+            _td.style = "display: flex; border-radius: 10px;";
+
+            const IMG_Group = `<div style="position: relative; vertical-align: super;"><img src="/assets/img/add_stepIMG.png" width="150" height="150" id="stepIMG_show${s_Num}" style="border-radius: 10px;"><input type="file" id="stepIMG${s_Num}" accept="image/*" name="list_step[${s_Num}].stepphoto" style="position: absolute; inset: 0px; opacity: 0; display: block; width: 150px; clear: both;"></div>`;
+            const txtArea = `<textarea placeholder="請輸入步驟" rows="6" cols="100" id="step${s_Num}" name="list_step[${s_Num}].step" style="margin-left: 50px; resize: none; vertical-align: top; border-radius: 10px;" required></textarea>`;
+            const _delete = `<button type="button" class="btn btn-danger deletestep" ><i class="fas fa-trash-alt"></i></button>`;
+
+            _td.insertAdjacentHTML("beforeend", IMG_Group);
+            _td.insertAdjacentHTML("beforeend", txtArea);
+            _td.insertAdjacentHTML("beforeend", _delete);
+
+            _tr.appendChild(_td);
+            const _toby = document.querySelector("#r_step");
+            _toby.appendChild(_tr);
+
+            $("#stepIMG" + s_Num).on("change", function () {
+                const readFile = new FileReader();
+                const step = $(this)[0].files[0];
+                const a = $(this)[0].id.substring(7);
+                readFile.readAsDataURL(step);
+                readFile.onload = function (e) {
+                    const img = $("#stepIMG_show" + a);
+                    img.attr("src", this.result);
+                }
+            });
+            $("#stepIMG" + s_Num).on("mousedown", function (e) {
+                if (e.button == 2) {
+                    $(this).val("");
+                    const a = $(this)[0].id.substring(7);
+                    const img = $("#stepIMG_show" + a);
+                    img.attr("src", "/assets/img/add_stepIMG.png");
+                }
+            });
+        });
+
+        $("#r_step").on("click", ".deletestep", function () {  //刪除按鈕
+            var max = $("#r_step").find("tr").find("textarea").last()[0].id.substring(4);
+            var index = $(this).parent("td").children("textarea")[0].id.substring(4);
+            $(this).closest("tr").remove();
+            if (index < max) {
+                $("#r_step").find("img").each(function (i, e) {
+                    e.setAttribute("id", `stepIMG_show${i}`);
+                });
+                $("#r_step").find("input").each(function (i, e) {
+                    e.setAttribute("id", `stepIMG${i}`);
+                    e.setAttribute("name", `list_step[${i}].stepphoto`);
+                });
+                $("#r_step").find("textarea").each(function (i, e) {
+                    e.setAttribute("name", `list_step[${i}].step`);
+                    e.setAttribute("id", `step${i}`);
+                });
+            }
+            max--;
+        });
+       
+        function check() {           
+            var IngredientCount = $("#r_ingredient").children("tr").length;
+            var StepCount = $("#r_step").children("tr").length;
+            var rule_IngredientAmountForUse = new RegExp("^[0-9]+(.[0-9]{1,2})?$");
+            var rule_Unt = new RegExp("^[\u4E00-\u9FA5A-Za-z]+$");
+            var FinallyCheck = true;
+            if (!confirm("確認要新增發佈？")) {
+                FinallyCheck = false;
+                window.event.returnValue = false;
+            }
+            else {
+                $("#I_errorMsg").text("");
+                $("#S_errorMsg").text("");
+                for (let i = 0; i < IngredientCount; i++) {
+                    $(`#ingredientAmountForUse_${i}`).css("border-color", "black");
+                    $(`#unt_${i}`).css("border-color", "black");
+                    if (!rule_IngredientAmountForUse.test($(`#ingredientAmountForUse_${i}`).val()) || $(`#ingredientAmountForUse_${i}`).val() == "") {
+                        $("#I_errorMsg").text("");
+                        $(`#ingredientAmountForUse_${i}`).css("border-color", "#dc3545");
+                        $("#I_errorMsg").text("欄位皆不得為空！數量欄僅接受數字 單位欄僅接受中英文字輸入").css("color", "#dc3545");
+                        FinallyCheck = false;
+                    }
+                    if (!rule_Unt.test($(`#unt_${i}`).val()) || $(`#unt_${i}`).val() == "") {
+                        $("#I_errorMsg").text("");
+                        $(`#unt_${i}`).css("border-color", "#dc3545");
+                        $("#I_errorMsg").text("欄位皆不得為空！數量欄僅接受數字 單位欄僅接受中英文字輸入").css("color", "#dc3545");
+                        FinallyCheck = false;
+                    }
+                }
+                for (let j = 0; j < StepCount; j++) {
+                    $(`#step${j}`).css("border-color", "black");
+                    if ($(`#step${j}`).val() == "") {
+                        $(`#step${j}`).css("border-color", "#dc3545");
+                        FinallyCheck = false;
+                        $("#S_errorMsg").text("步驟欄位不得為空").css("color", "#dc3545");
+                    }
+                }
+            }
+            return FinallyCheck;
+        }
+
+        function confirmCancel() {
+            if (!confirm("放棄新增？")) {
+                window.event.returnValue = false;
+            }
+            else {
+                window.location.href = "/HomePage/Index";
+            }
+        }
+
+        $("#demo").on("click", function () {
+            $("#recipeName").val("木瓜牛奶");
+            $("#recipeCategory option[value='8']").attr("selected", true);
+            $("#recipeVideo").val("https://www.youtube.com/watch?v=0kUu-5prtdQ");
+            $("#recipeDescription").val("炎炎夏日想來一杯涼的消暑一下💦防疫期間不想出門去外面亂晃亂買😔快跟著菈菈～～簡單5分鐘輕鬆做不加糖健康輕鬆無負擔！#減肥也可以喝的小飲品❤️");
+            $("#forHowmany").val("2");
+            $("#timeNeed").val("5");
+            if ($("#r_ingredient").children("tr").length == 0) {
+                for (let i = 0; i < 2; i++) {
+                    $(".addingredient").click();
+                    if (i == 0) {
+                        $(`#ingredientAmountForUse_${i}`).val("0.5");
+                        $(`#unt_${i}`).val("顆");
+                    }
+                    if (i == 1) {
+                        $(`#ingredientAmountForUse_${i}`).val("350");
+                        $(`#unt_${i}`).val("cc");
+                    }
+                }              
+                setTimeout(function () {                  
+                    $(`#ingredientCategory${0} option[value='5']`).attr("selected", true).trigger('change');
+                    $(`#ingredientCategory${1} option[value='9']`).attr("selected", true).trigger('change');
+                }, 1500);                
+                setTimeout(function () {                   
+                    $(`#ingredient${0}_chosen > a > span`).text("木瓜");
+                    $(`#ingredient${1}_chosen > a > span`).text("鮮奶");                   
+                }, 2000)
+            }
+            if ($("#r_step").children("tr").length == 0) {
+                for (let j = 0; j < 5; j++) {
+                    $(".addstep").click();
+                }
+                $(`#step${0}`).text("備料：1.先將木瓜切成塊狀，以利於打果汁（小提醒：將木瓜拿去冰後再拿出，冰木瓜塊有冰塊效果，可以有效降低果汁苦味）2.牛奶可準備低脂牛奶比較健康無負擔（小提醒：全脂熱量高但打起來更香哦！）");
+                $(`#step${1}`).text("開始製作2人份的木瓜牛奶😋 將適量的木瓜塊備妥，比例大約是半顆（約15塊）木瓜");
+                $(`#step${2}`).text("將半顆木瓜（約15塊）倒進果汁機中後，倒入冰牛奶（約350cc)開始打汁 ✏️小叮嚀 菈菈喜歡比較奶的木瓜牛奶，因此準備約350cc牛奶淹過果汁機杯裡的木瓜開始打汁 喜歡瓜味比較重的人，可以牛奶再少一點哦！");
+                $(`#step${3}`).text("（往果汁機裡看👀）香濃的木瓜牛奶完成了！！ 比較講究一點的人，可以拿濾勺將泡沫濾掉哦～");
+                $(`#step${4}`).text("將將將～～～是不是輕鬆簡單🥰 很奶健康低熱量的木瓜牛奶完成了！ 2杯熱量頂多200 - 300大卡而已😭好感人 疫情嚴重，在家自己做剛剛好！ 快來一起跟菈菈輕鬆開心做美食❤️");
+            }
+            
+        });
+            
+    </script>
+}

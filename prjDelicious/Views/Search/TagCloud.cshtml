@@ -1,0 +1,34 @@
+﻿
+@{
+    ViewData["Title"] = "TagCloud";
+}
+
+<h2>Tag Cloud</h2>
+<div id="divtag" style="margin:500px 500px"></div>
+<span style="font-size:100px; color:dimgray">#測試</span>
+@section Scripts{
+    <script>
+        const fragT = $(document.createDocumentFragment())
+        showcloud()
+        async function showcloud() {
+            let response = await fetch('/Search/GetHashTags/')
+            let tags = await response.json()
+            tags = tags.sort(function (a, b) {
+                return 0.5 - Math.random()
+            })
+            const colors = ['darkred', 'darkgreen', 'darkblue', 'darkgoldenrod', 'dimgray']
+            tags.forEach(items => {                
+                const name = items.hasgtag
+                const size = (items.views / 20) + 20
+                const color = colors[getRandom(0, 5)]
+                const cloud = $('<span style="font-size:' + size +'px; color:'+ color +' ">#' + name + '</span>')
+                fragT.append(cloud)
+            })
+            $('#divtag').html(fragT)
+        }
+        function getRandom(min, max) {
+            return Math.floor(Math.random() * max) + min;
+        };
+    </script>
+        
+}

@@ -1,0 +1,263 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+}
+
+    <div class="h3 bgmainbar text-center">會員一覽表</div> 
+     <input type="button" id="demo" value="demo" class="btn btn-info" />
+    <p style="float:right">關鍵字搜尋<i class="fas fa-search" style="margin-right:5px"></i><input type="text" id="search_txt" name="search_txt" placeholder="Search..." value=""/></p>
+
+        <div class="card-body">
+            <table class="table text-center" id="datatables">
+                <thead class="thead-dark" >
+                    <tr>
+                        <th>
+                            會員編號
+                        </th>
+                        <th>
+                            會員帳號
+                        </th>
+
+                        <th>
+                            會員姓名
+                        </th>
+                        <th>
+                            手機號碼
+                        </th>
+                        <th>
+                            電子郵件
+                        </th>
+                        <th>
+                            生日
+                        </th>
+
+                        <th>
+                            活動紀錄
+                        </th>
+
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+    
+
+    <!-- Button trigger modal -->
+    <!--<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" style="background-color:transparent">
+        <i class="fas fa-search-plus"></i>
+    </button>-->
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header justify-content-center" style="background-color:#F6F6F6">
+                    <h4 class="modal-title wordweight" id="exampleModalLabel">會員活動紀錄</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modal-body" style="background-color:#F6F6F6"></div>
+                <div class="modal-footer" style="background-color:#F6F6F6">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    @*<button type="button" class="btn btn-primary">Save changes</button>*@
+                </div>
+            </div>
+        </div>
+    </div>
+ 
+</div>
+ @section Scripts{
+        @*<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+        <script src="/js/scripts.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
+        <script src="/js/datatables-simple-demo.js"></script>*@
+        <script>
+           
+            tabledetails()
+            document.getElementById("search_txt").addEventListener('keyup', function () { tabledetails() })
+            document.getElementById("search_txt").addEventListener('change', function () { tabledetails() })
+            function tabledetails() {
+                console.log(document.getElementById("search_txt").value)
+                const valueofkeywords = document.getElementById("search_txt").value
+                const formdata = new FormData()
+                
+                  formdata.append("keywords", valueofkeywords)
+               
+               
+                const Membertable = document.querySelector('#datatables>tbody')
+                fetch('/MemberManagement/Getmembers', { method: 'Post', body: formdata }).then(response => { return response.json() }).then(datas => {
+                Membertable.innerHTML = ""
+                const docFrag = document.createDocumentFragment()
+                datas.memberlist.forEach(memberInfo => {
+                    console.log(memberInfo.birthday)
+                    const { accountName, cellNumber, email, memberId, memberName } = memberInfo
+                    //console.log(accountName)
+                    //var birth = memberinfo.birthday.substring(0, 10).replace('-', '/').replace('-', '/')
+                    const cell1 = document.createElement("td")
+                    const txt1 = document.createTextNode(memberId)
+                    cell1.appendChild(txt1)
+                    //cell1.setAttribute('hidden', 'hidden')
+
+                    const cell2 = document.createElement("td")
+                    const txt2 = document.createTextNode(accountName)
+                    cell2.appendChild(txt2)
+
+                    const cell3 = document.createElement("td")
+                    const txt3 = document.createTextNode(memberName)
+                    cell3.appendChild(txt3)
+
+                    const cell4 = document.createElement("td")
+                    const txt4 = document.createTextNode(cellNumber)
+                    cell4.appendChild(txt4)
+
+                    const cell5 = document.createElement("td")
+                    const txt5 = document.createTextNode(email)
+                    cell5.appendChild(txt5)
+
+                    const cell6 = document.createElement("td")
+                    if (memberInfo.birthday!=null)
+                    {
+                        const txt6 = document.createTextNode(memberInfo.birthday)
+                        cell6.appendChild(txt6)
+                    }
+
+                    const cell7 = document.createElement("td")
+                    const btn7 = document.createElement("button")
+                    const i7 = document.createElement('i')
+                    btn7.setAttribute('id', memberId)
+                    btn7.setAttribute('data-bs-toggle', 'modal')
+                    btn7.setAttribute('data-bs-target', '#exampleModal')
+                   /* btn7.setAttribute('border-color', 'blue')*/
+                    btn7.classList.add('btn')
+                    btn7.classList.add('btn-info')
+                    btn7.classList.add('memberdetail')
+                    i7.classList.add('fas')
+                    i7.classList.add('fa-search-plus')
+                    /*i7.setAttribute('color', 'blue')*/
+                    btn7.appendChild(i7)
+                    cell7.appendChild(btn7)
+
+
+                    const row = document.createElement("tr")
+                    row.appendChild(cell1)
+                    row.appendChild(cell2)
+                    row.appendChild(cell3)
+                    row.appendChild(cell4)
+                    row.appendChild(cell5)
+                    row.appendChild(cell6)
+                    row.appendChild(cell7)
+
+                    docFrag.appendChild(row)
+                    
+
+                })
+                Membertable.appendChild(docFrag)
+
+                const btns_member = document.body.querySelectorAll('.memberdetail')
+             
+                btns_member.forEach(item => {
+
+                    item.addEventListener('click', function () {
+                        const memberid = this.id
+
+                        getdatas(memberid)
+                    })
+
+                })
+            })
+            }
+            async function getdatas(memberid) {
+                const Modalinner = document.querySelector('#modal-body')
+                Modalinner.innerHTML = ""
+
+                const response = await fetch("/MemberManagement/ActivityRecords/?memberid=" + memberid, { method: 'Get' })
+                const datas = await response.json()
+                const docFrag = document.createDocumentFragment()
+
+                /*console.log(datas)*/
+
+                const p00 = document.createElement("p")
+                const text00 = document.createTextNode("會員編號\n" + datas.memberId)
+                const p01 = document.createElement("p")
+                const text01 = document.createTextNode("會員姓名\n" + datas.memberName)
+                const p02 = document.createElement("p")
+                const text02 = document.createTextNode("會員積分\n" + datas.personalRankScore)
+
+                p00.setAttribute("font-weight", "bold")
+                p00.appendChild(text00)
+
+                p01.setAttribute("font-weight", "bold")
+                p01.appendChild(text01)
+
+                p02.setAttribute("font-weight", "bold")
+                p02.appendChild(text02)
+
+                const p1 = document.createElement("a")
+
+                p1.setAttribute('href', '/Recipe/Index/?pg=0&category=0&keywords=' + datas.email)
+                const text1 = document.createTextNode("食譜發佈" + datas.recipecount + "筆")
+                p1.appendChild(text1)
+                p1.setAttribute('class', 'bgbtn mb-3')
+               
+                const ul1 = document.createElement("ul")
+                ul1.classList.add('mt-3')
+                datas.trecipelist.forEach(item => {
+
+                    const li1 = document.createElement("li")
+                    const litxt = document.createTextNode(item)
+                    li1.appendChild(litxt)
+                    ul1.append(li1)
+                })
+
+
+                const p2 = document.createElement("a")
+                p2.setAttribute('href', '/Order/Index/?email=' + datas.email)
+                const text2 = document.createTextNode("訂單交易" + datas.ordercount + "筆")
+                p2.appendChild(text2)
+                p2.setAttribute('class', 'bgbtn mb-3')
+                const ul2 = document.createElement("ul")
+                datas.ordertime.forEach(item => {
+                    const li2 = document.createElement("li")
+                    const litxt = document.createTextNode(item)
+                    li2.appendChild(litxt)
+                    ul2.append(li2)
+                })
+
+                const p3 = document.createElement("a")
+                p3.setAttribute('href', '/PhotoWall/Index')
+                const text3 = document.createTextNode("投稿紀錄" + datas.contributephotowallcount + "筆")
+                p3.appendChild(text3)
+                p3.setAttribute('class', 'bgbtn mb-3')
+                const ul3 = document.createElement("ul")
+                datas.contributephotowalltime.forEach(item => {
+
+               const li3 = document.createElement("li")
+               const litxt = document.createTextNode(item)
+                li3.appendChild(litxt)
+                ul3.append(li3)
+                })
+
+                docFrag.appendChild(p00)
+                docFrag.appendChild(p01)
+                docFrag.appendChild(p02)
+                docFrag.appendChild(p1)
+                docFrag.appendChild(ul1)
+                docFrag.appendChild(p2)
+                docFrag.appendChild(ul2)
+                docFrag.appendChild(p3)
+                docFrag.appendChild(ul3)
+                Modalinner.appendChild(docFrag)
+                /*console.log(datas)*/
+            }
+
+            $("#demo").on("click", function ()
+            {
+                $("#search_txt").val("delicious13002@gmail.com")
+                tabledetails()
+            })
+
+
+
+
+
+
+        </script>
+
+    }

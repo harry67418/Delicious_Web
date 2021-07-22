@@ -1,0 +1,242 @@
+﻿@model prjDelicious.ViewModel.CMemberRankViewModel
+
+@{
+    ViewData["Title"] = "List";
+    var ViewCount = 0;
+}
+@section Style{
+    <link href="/assets/css/ranklist.css" rel="stylesheet">
+}
+<section id="portfolio" class="portfolio">
+    <div class="section-title">
+        @*<h1>封雲榜</h1>*@
+    </div>
+    <div class="container">
+        <div class="row table-row">
+            <!--會員積分榜-->
+            <div class="col-sm-6 table-col">
+                <div class="time-rank">
+                    <h3 class="time-rank">👑會員積分榜</h3>
+                </div>
+                <table class="table text-center" cellpadding="0" cellspacing="0">
+                    <thead class="thead">
+                        <tr>
+                            <td></td>
+                            <td>大頭貼</td>
+                            <td>暱稱</td>
+                            <td>個人積分</td>
+                        </tr>
+                    </thead>
+                    <tbody class="tbody">
+                        @foreach (var member in Model._members)
+                        {
+                            <tr id="@member.MemberId" class="memberrank" style="cursor: pointer">
+
+                                @if (ViewCount < 3)
+                                {
+                                    ViewCount++;
+                                    <td>
+                                        <img class="rank-img" src='@("/assets/img/"+ViewCount+".png")'/>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td></td>
+                                }
+                                <td>
+                                    <img class="rounded-circle figure" src="@Model.FigureSrc@member.Figure"/>
+                                </td>
+                                <td><p>@member.Nickname</p></td>
+                                <td><p>@member.PersonalRankScore</p></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <!--食譜發表累積榜-->
+            <div class="col-sm-6 table-col">
+                <div class="time-rank">
+                    <h3 class="time-rank">📝食譜發表累積榜</h3>
+                </div>
+                <table class="table text-center"cellpadding="0" cellspacing="0">
+                    <thead class="thead">
+                        <tr>
+                            <td></td>
+                            <td>大頭貼</td>
+                            <td>暱稱</td>
+                            <td>食譜發表數</td>
+                        </tr>
+                    </thead>
+                    <tbody class="tbody">
+                        @{ViewCount = 0;}
+                        @foreach (var recipecount in Model._howmany)
+                        {
+                            <tr id="@recipecount.MemberId" class="membercount" style="cursor: pointer">
+
+                                @if (ViewCount < 3)
+                                {
+                                    ViewCount++;
+                                    <td>
+                                        <img class="rank-img" src='@("/assets/img/"+ViewCount+".png")'/>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td></td>
+                                }
+                                <td>
+                                    <img class="rounded-circle figure" src="@Model.FigureSrc@recipecount.Figure"/>
+                                </td>
+                                <td><p>@recipecount.Nickname</p></td>
+                                <td><p>@recipecount.COUNT</p></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row table-row">
+                <div class="col-sm-6 table-col">
+                    <div class="time-rank">
+                        <h3 class="time-rank">🧡食譜喜歡榜</h3>
+                    </div>
+                    <table class="table" cellpadding="0" cellspacing="0">
+                        <thead class="thead">
+                            <tr>
+                                <td></td>
+                                <td>照片</td>
+                                <td>食譜名稱</td>
+                                <td>作者</td>
+                                <td>被喜歡數</td>
+                            </tr>
+                        </thead>
+                        <tbody class="tbody">
+                            @{ViewCount = 0;}
+                            @foreach (var recipes in Model._recipes)
+                            {
+                                <tr class="likerecipe" id="@recipes.RecipeId" style="cursor: pointer">
+
+                                    @if (ViewCount < 3)
+                                    {
+                                        ViewCount++;
+                                        <td>
+                                            <img class="rank-img" src='@("/assets/img/"+ViewCount+".png")'/>
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td></td>
+                                    }
+                                    <td>
+                                        <img class="rounded-circle figure" src="@recipes.recipePicture" />
+                                    </td>
+                                    <td><p>@recipes.RecipeName</p></td>
+                                    <td><p>@recipes.Nickname</p></td>
+                                    <td><p>@recipes.COUNT</p></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-sm-6 table-col">
+                    <div class="time-rank">
+                        <h3 class="time-rank">📂食譜收藏榜</h3>
+                    </div>
+                    <table class="table" cellpadding="0" cellspacing="0">
+                        <thead class="thead">
+                            <tr>
+                                <td></td>
+                                <td>照片</td>
+                                <td>食譜名稱</td>
+                                <td>作者</td>
+                                <td>被收藏數</td>
+                            </tr>
+                        </thead>
+                        <tbody class="tbody">
+                            @{ViewCount = 0;}
+                            @foreach (var collections in Model._collections)
+                            {
+                                <tr class="collrecipe" id="@collections.RecipeId" style="cursor: pointer">
+
+                                    @if (ViewCount < 3)
+                                    {
+                                        ViewCount++;
+                                        <td>
+                                            <img class="rank-img" src='@("/assets/img/"+ViewCount+".png")'/>
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td></td>
+                                    }
+                                    <td>
+                                        <img class="rounded-circle figure" src="@collections.recipePicture" />
+                                    </td>
+                                    <td><p>@collections.RecipeName</p></td>
+                                    <td><p>@collections.Nickname</p></td>
+                                    <td><p>@collections.COUNT</p></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+</section>
+
+@section Scripts{
+    <script>
+        //點擊會員積分榜後跳轉那個會員的頁面
+        //document.addEventListener('DOMContentLoaded', function () {
+        //    $(".memberrank").click(function () {
+        //        let memberid = $(this).attr('id')
+        //        rowmemberclick(memberid)
+        //    })
+        //});
+
+        //點擊會員積分榜後跳轉那個會員的頁面
+        document.addEventListener('DOMContentLoaded', function () {
+            $(document).on("click", ".memberrank", function () {
+                let memberid = $(this).attr("id");
+                rowmemberclick(memberid);
+                console.log(memberid)
+            })
+        })
+
+        document.addEventListener("DOMContentLoaded", function () {
+            $(document).on("click", ".membercount", function () {
+                let memberid = $(this).attr("id");
+                rowmemberclick(memberid);
+            })
+        })
+
+        //跳轉被點擊的會員頁面
+        let rowmemberclick = function (memberid) {
+            window.open('/UserPage/Profile?id=' + memberid);
+        }
+
+        //==================================================
+
+        //點擊食譜排行榜後跳轉那個食譜的頁面
+        document.addEventListener("DOMContentLoaded", function () {
+            $(document).on("click", ".likerecipe", function () {
+                let recipeid = $(this).attr("id");
+                rowrecipeclick(recipeid);
+            })
+        })
+
+        document.addEventListener("DOMContentLoaded", function () {
+            $(document).on("click", ".collrecipe", function () {
+                let recipeid = $(this).attr("id");
+                rowrecipeclick(recipeid);
+            })
+        })
+
+        //跳轉被點擊的食譜頁面
+        let rowrecipeclick = function (recipeid) {
+            window.open('/ForRecipe/Recipe?id=' + recipeid);
+        }
+    </script>
+
+}

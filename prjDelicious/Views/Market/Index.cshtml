@@ -1,0 +1,60 @@
+﻿@model IEnumerable<prjDelicious.Models.Tingredient>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>菜市場</h1>
+
+<p>
+   <a asp-action="ToCart">
+       前往購物車
+   </a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+               商品名稱
+            </th>
+            <th>
+                規格
+            </th>
+            <th>
+                價格
+            </th>
+            <th>
+                商品描述
+            </th>
+            <th>
+                產品分類
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Ingredient)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IngredientUnit)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MerchandiseDescription)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IngredientCategory.IngredientCategory)
+            </td>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.IngredientId">商品細項</a> |
+                <a asp-action="Delete" asp-route-id="@item.IngredientId">放入購物車</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

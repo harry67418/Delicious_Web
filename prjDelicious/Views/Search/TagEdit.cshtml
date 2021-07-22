@@ -1,0 +1,90 @@
+﻿<form id="formHashTag" style="margin: 0 auto;  max-width: 300px;">
+
+</form>
+<div style="display:flex">
+    <div id="divHashTag" style="margin: 0 auto;  max-width: 300px;">
+        <h1>HashTag編輯器</h1>
+        <h1>食譜:@Html.Raw(ViewBag.txt)</h1>
+        <input type="text" id="txtT" /><input type="button" id="btnT" value="新增">
+        <table id="tableHashTag" class="table table-hover">
+            <thead class="table table-warning">
+                <tr>
+                    @*<th>HashTag序號</th>*@
+                    <th>HashTag名稱</th>
+                    <th>加入?</th>
+                </tr>
+            </thead>
+            <tbody id="tbodyHashTag">
+            </tbody>
+        </table>
+    </div>
+</div>
+@section Scripts{
+    <script>
+    let recipeId = @Html.Raw(ViewBag.id)
+    console.log('recipeid:'+ @Html.Raw(ViewBag.id))
+    const fragTag = $(document.createDocumentFragment())
+    $('#txtT').on('change', $('input'), function () { SearchHashTag() })
+    let data
+    let rdata
+    async function SearchHashTag() {
+        let response = await fetch('/Search/SearchHashTag?txtSearch=' + $('#txtT').val())
+        data = await response.json()
+        console.log(data)
+        show()
+    }
+    const fragRT = $(document.createDocumentFragment())
+    GetRecipeTag()
+    async function GetRecipeTag() {
+        let response = await fetch('/Search/GetRecipeTag?id=' + recipeId)
+        rdata = await response.json()
+        console.log(rdata)
+        SearchHashTag()
+        }
+        function show() {
+            data.forEach(item => {
+                if (rdata.includes(item.hashtagId)) {
+                    const rid = $('<td></td>').text(item.hashtagId)
+                    const rname = $('<td></td>').text(item.hasgtag)
+                    const rbtn = $('<td><input tid="' + item.hashtagId + '" class="deleteTag" type="button" value="刪除"></td>')
+                    const row = $('<tr bgcolor="red"></tr>').append(rname, rbtn)
+                    fragTag.append(row)
+                }
+                else {
+                    const rid = $('<td></td>').text(item.hashtagId)
+                    const rname = $('<td></td>').text(item.hasgtag)
+                    const rbtn = $('<td><input tid="' + item.hashtagId + '" class="addTag" type="button" value="加入"></td>')
+                    const row = $('<tr></tr>').append(rname, rbtn)
+                    fragTag.append(row)
+                }
+            })
+            $('#tableHashTag>tbody').html(fragTag)
+            $(".deleteTag").click(function () {
+                let tid = $(this).attr('tid')
+                DeleteRecipeTag(tid)
+            })
+            $(".addTag").click(function () {
+                let tid = $(this).attr('tid')
+                AddRecipeTag(tid)
+            })
+            async function DeleteRecipeTag(tid) {
+                let response = await fetch('/Search/DeleteRecipeTag?rid=' + recipeId + '&tid=' + tid)
+                rdata = await response.json()
+                SearchHashTag()
+            }
+            async function AddRecipeTag(tid) {
+                let response = await fetch('/Search/AddRecipeTag?rid=' + recipeId + '&tid=' + tid)
+                rdata = await response.json()
+                SearchHashTag()
+            }
+        }
+        $("#btnT").click(function () {
+            CreateRecipeTag($('#txtT').val())
+        })
+        async function CreateRecipeTag(tagName) {
+            let response = await fetch('/Search/CreateRecipeTag?tagName='+ tagName)
+            data = await response.json()
+            SearchHashTag()
+        }
+    </script>
+}

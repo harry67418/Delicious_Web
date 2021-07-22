@@ -1,0 +1,175 @@
+﻿@{
+    ViewData["Title"] = "HashTag關聯編輯器";
+}
+<h1>HashTag關聯編輯器</h1>
+<div class="text-center" style="display:flex; margin:40px;">
+    <div id="divAT" style="margin:40px;">
+        <h3>HashTag總表</h3>
+        <input type="text" id="txtAT" />
+        <table id="tblAT" class="table">
+            <thead>
+                <tr>
+                    <th>HashTag名稱</th>
+                    <th><a id="btnCtxtAT" class="btn btn-primary mr-3"><i class="fas fa-undo"></i></a><a id="btnCT" class="btn btn-primary mr-3"><i class="fas fa-plus"></i></a></th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <div id="divAR" style="margin:40px;">
+        <h3 id="h3ST1"></h3>
+        <h3 id="h3ST">食譜總表</h3>
+        <input type="text" id="txtAR" />
+        <table id="tblAR" class="table">
+            <thead>
+                <tr>
+                    <th>食譜名稱</th>
+                    <th><a id="btnNST" class="btn btn-primary mr-3"><i class="fas fa-undo"></i></a>@*<a id="btnSAR" class="btn btn-primary mr-3"><i class="fas fa-arrow-right"></i></a>*@</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+@section Scripts{
+    <script>
+
+        let dataAT
+        let dataAR
+        let ST = false
+        let STid = 0
+        let ETid = 0
+        let OK = false
+
+        const fragAT = $(document.createDocumentFragment())
+        const fragAR = $(document.createDocumentFragment())
+
+        $('#txtAT').on('change', $('input'), function () { schAT() })
+        $('#txtAR').on('change', $('input'), function () { schAR() })
+
+        schAT()
+        schAR()
+
+        $("#btnCT").click(function () {
+            CT()
+        })
+        $("#btnCtxtAT").click(function () {
+            $('#txtAT').val('')
+            schAT()
+        })
+        async function CT() {
+            let response = await fetch('/HashTag/CreateTag?tagName=' + $('#txtAT').val())
+            if ((await response.json()) != 'repeat') {
+                dataAT = await response.json()
+                schAT()
+            }
+            else {
+                alert('與現有名稱重複');
+            }
+        }
+        async function DT(tid) {
+            let response = await fetch('/HashTag/DeleteTag?tagId=' + tid)
+            dataAT = await response.json()
+            schAT()
+        }
+        async function ET(tid,tname) {
+            let response = await fetch('/HashTag/EditTag?tagId=' + tid +'&tagName='+tname)
+            if ((await response.json()) != 'repeat') {
+                dataAT = await response.json()
+                schAT()
+            }
+            else {
+                alert('與現有名稱重複');
+            }
+        }
+
+        async function schAT() {
+            let response = await fetch('/HashTag/schAT?txt=' + $('#txtAT').val())
+            dataAT = await response.json()
+            dataAT.forEach(d => {
+                const btnedt = '<a class="btn btn-secondary mr-3 edtAT" ATid="' + d.hashtagId + '" ATname="' + d.hasgtag +'"><i class="fas fa-pen-nib"></i></a>'
+                const btndel = '<a class="btn btn-danger mr-3 delAT" ATid="' + d.hashtagId + '"><i class="fas fa-trash-alt"></i></a>'
+                const name = $('<td ATid="' + d.hashtagId + '" ATname="' + d.hasgtag +'" class="rowAT"></td>').text(d.hasgtag)
+                const btn = $('<td>' + btnedt + btndel +'</td>')
+                const row = $('<tr></tr>').append(name,btn)
+                fragAT.append(row)
+            })
+            $('#tblAT>tbody').html(fragAT)
+            $(".rowAT").click(function () {
+                ST = true
+                STid = $(this).attr('ATid')
+                STname = $(this).attr('ATname')
+                $('#h3ST').text('#' + STname + '食譜表')
+                $('#h3ST1').text('目前選定#' + STname)
+                schAR()
+            })
+            $(".edtAT").click(function () {
+                let tid = $(this).attr('ATid')
+                let tname = $(this).attr('ATname')
+                let ntname = prompt('請輸入修改名稱', tname);
+                if ((ntname != null) || (ntname != '')) {
+                    ET(tid , ntname)
+                }
+            })
+            $(".delAT").click(function () {
+                let tid = $(this).attr('ATid')
+                DT(tid)
+            })
+        }
+        $("#btnNST").click(function () {
+            ST = false
+            $('#h3ST').text('食譜總表')
+            schAR()
+        })
+        async function schAR() {
+            let response
+            if (ST) {
+                response = await fetch('/HashTag/schTR?id=' + STid + '&txt=' + $('#txtAR').val())
+            }
+            else {
+                response = await fetch('/HashTag/schAR?id=' + STid + '&txt=' + $('#txtAR').val())
+            }
+            dataAR = await response.json()
+            dataAR.forEach(d => {
+                if (d.tagFlag > 0) {
+                    const btndtl = '<a class="btn btn-primary mr-3 dtlAR" ARid="' + d.recipeId + '"><i class="fas fa-file-alt"></i></a>'
+                    const btndelt = '<a class="btn btn-danger mr-3 delT" ARid="' + d.recipeId + '"><i class="fas fa-minus"></i></a>'
+                    const name = $('<td ARid="' + d.recipeId + '" class="rowAR"></td>').text(d.recipeName)
+                    const btn = $('<td>' + btndelt + btndtl + '</td>')
+                    const row = $('<tr></tr>').append(name, btn)
+                    fragAR.append(row)
+                }
+                if (d.tagFlag == 0) {
+                    const btndtl = '<a class="btn btn-primary mr-3 dtlAR" ARid="' + d.recipeId + '"><i class="fas fa-file-alt"></i></a>'
+                    const btnaddt = '<a class="btn btn-primary mr-3 addT" ARid="' + d.recipeId + '"><i class="fas fa-plus"></i></a>'
+                    const name = $('<td ARid="' + d.recipeId + '" class="rowAR"></td>').text(d.recipeName)
+                    const btn = $('<td>' + btnaddt + btndtl + '</td>')
+                    const row = $('<tr></tr>').append(name, btn)
+                    fragAR.append(row)
+                }
+            })
+            $('#tblAR>tbody').html(fragAR)
+            $(".delT").click(function () {
+                let rid = $(this).attr('ARid')
+                DRT(rid)
+            })
+            $(".addT").click(function () {
+                let rid = $(this).attr('ARid')
+                ART(rid)
+            })
+        }
+        async function DRT(rid) {
+            let response = await fetch('/HashTag/DeleteRecipeTag?rid=' + rid + '&tid=' + STid)
+            OK = await response.json()
+            schAR()
+        }
+        async function ART(rid) {
+            let response = await fetch('/HashTag/AddRecipeTag?rid=' + rid + '&tid=' + STid)
+            OK = await response.json()
+            schAR()
+        }
+    </script>
+
+}

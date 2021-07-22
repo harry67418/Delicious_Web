@@ -1,0 +1,116 @@
+﻿@{
+    ViewData["Title"] = "MemberList";
+}
+<body>
+    <hr />
+    <div id="loading" style="height: 67%">
+        <h1 style="margin: 0 auto;  max-width: 300px;">搜尋中...</h1>
+    </div>
+    <div id="empty" style="height: 67%">
+        <h1 style="margin: 0 auto;  max-width: 300px;">無相符結果</h1>
+    </div>
+    <div id="loaded" style="margin: 0 auto; max-width: 400px;">
+        <h2 style="margin: 0 auto;  max-width: 300px;"><span id="count" style="margin: 0 auto;  max-width: 300px;"></span></h2>
+        <hr />
+        <h3>
+            <span>排序方式:</span>
+            <span id="views">點閱數</span>
+            <span>/</span>
+            <span id="likes">積分</span>
+        </h3>
+    </div>
+    <hr />
+
+    <div id="divrow" style="margin: 0 auto; font-weight:bold"></div>
+</body>
+@section Scripts{
+    <script>
+        const fragM = $(document.createDocumentFragment())
+        $('#txtSearch').on('change', $('input'), function () { SearchMember() })
+        $('#views').click(function () { vsort() })
+        $('#likes').click(function () { lsort() })
+        let rowclick = function (id) {
+            window.open('/UserPage/Profile?id=' + id)
+        }
+        $('#loaded').hide()
+        $('#txtSearch').val('@Html.Raw(ViewBag.txt)')
+        $('#selSearch').val('member')
+        $('#empty').hide()
+        SearchMember()
+        let alldata = ""
+        let data = ""
+        async function SearchMember() {
+            let response = await fetch('/Search/SearchMember?txtSearch=' + $('#txtSearch').val())
+            alldata = await response.json()
+            data = alldata
+            $('#empty').hide()
+            $('#loading').hide()
+            $('#loaded').show()
+            vsort()
+        }
+        function vsort() {
+            data.sort(function (a, b) {
+                return b.views - a.views
+            })
+            Show()
+            $('#views').text('點閱數▼')
+            $('#likes').text('積分')
+        }
+        function lsort() {
+            data.sort(function (a, b) {
+                return b.score - a.score
+            })
+            Show()
+            $('#views').text('點閱數')
+            $('#likes').text('積分▼')
+        }
+        function Show() {
+            let count = 0
+            data.forEach(items => {
+                count = count + 1
+                let recipes = ""
+                items.recipes.forEach(r => {
+                    recipes += " " + r + " ";
+                })
+                const card = $(
+                    //'<div class="card mb-3 reciperow" style="max-width: 540px; height:240px ; display: inline-block;">'
+                    '<div id="' + items.memberId + '" class="card mb-3 memberrow" style="max-width: 1000px; margin: 0 auto; ">'
+                    + '<div class="row g-0">'
+                    + '<div class="col-md-4">'
+                    + '<img src="https://deliciousnet.azurewebsites.net/assets/img/figure/' + items.figure + '"onerror="nofind()" class="img-fluid rounded-start" alt="...">'
+                    + '</div>'
+                    + '<div class="col-md-8">'
+                    + '<div class="card-body">'
+                    + '<h3 class="card-title">' + items.nickname + '</h3>'
+                    + '<p class="card-text">' + items.info + '</p>'
+                    + '<p class="card-text"><small class="text-muted">👁️' + items.views + '🏆︎' + items.score + '</small></p>'
+                    + '<p class="card-text"><small class="text-muted">' + items.time + '</small></p>'
+                    + '<p class="card-text"><small class="text-muted">' + recipes + '</small></p>'
+                    + '</div>'
+                    + '</div>'
+                    + '</div>'
+                    + '</div>'
+                )
+                fragM.append(card)
+            //    console.log('##'+items.figure)
+            })
+            if (count == 0) {
+                $('#loaded').hide()
+                $('#empty').show()
+            }
+            $('#divrow').html(fragM)
+            $(".memberrow").click(function () {
+                let id = $(this).attr('id')
+                rowclick(id)
+            })
+            $('#count').text('' + count + '筆結果')
+        }
+    </script>
+}
+<script type="text/javascript">
+    function nofind() {
+        var img = event.srcElement;
+        img.src = '/assets/img/figure/default.jpg'; //替換的圖片
+        img.onerror = null; //控制不要一直觸發錯誤
+    }
+</script>

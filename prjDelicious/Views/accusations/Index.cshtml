@@ -1,0 +1,56 @@
+﻿@model IEnumerable<prjDelicious.Models.Taccusation>
+
+@{
+    ViewData["Title"] = "Index";
+}
+<div class="container">
+    <h1>Index</h1>
+
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.AccusedAvatar)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.AccusedId)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ProgressId)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Accuse)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Member)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AccusedAvatar)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AccusedId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ProgressId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Accuse.Accusation)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Member.AccountName)
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    </div>

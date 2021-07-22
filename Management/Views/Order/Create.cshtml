@@ -1,0 +1,72 @@
+﻿@model Management.Models.Torder
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Torder</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="MemberId" class="control-label"></label>
+                <input asp-for="MemberId" class ="form-control" /></input>
+            </div>
+            <div class="form-group">
+                <label asp-for="OrderDate" class="control-label"></label>
+                <input asp-for="OrderDate" class="form-control" />
+                <span asp-validation-for="OrderDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DeliveryCounty" class="control-label"></label>
+                <input asp-for="DeliveryCounty" class="form-control" />
+                <span asp-validation-for="DeliveryCounty" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DeliveryDistrict" class="control-label"></label>
+                <input asp-for="DeliveryDistrict" class="form-control" />
+                <span asp-validation-for="DeliveryDistrict" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DeliveryAddress" class="control-label"></label>
+                <input asp-for="DeliveryAddress" class="form-control" />
+                <span asp-validation-for="DeliveryAddress" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PayMethod" class="control-label"></label>
+                <input asp-for="PayMethod" class="form-control" />
+                <span asp-validation-for="PayMethod" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DeliveredDate" class="control-label"></label>
+                <input asp-for="DeliveredDate" class="form-control" />
+                <span asp-validation-for="DeliveredDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="OrderStatus" class="control-label"></label>
+                <input asp-for="OrderStatus" class="form-control" />
+                <span asp-validation-for="OrderStatus" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RecieveMethod" class="control-label"></label>
+                <input asp-for="RecieveMethod" class="form-control" />
+                <span asp-validation-for="RecieveMethod" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,91 @@
+﻿
+@{
+    ViewData["Title"] = "新增商品";
+}
+
+
+
+<div class="returnheader">
+    <h5 class="returntitle" id="staticBackdropLabel">食材商品明細</h5>
+</div>
+<div class="returnbody">
+    <form id="addForm" name="tform" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="IngredientID" id="IngredientID">
+        <div class="form-group">
+            <label for="Ingredient">商品名稱</label>
+            <input type="text" class="form-control" id="Ingredient" name="Ingredient"
+                   placeholder="商品名稱">
+        </div>
+        <div class="form-group">
+            <label for="IngredientCategoryID">食材種類</label>
+            <select class="form-control" id="IngredientCategoryID" name="IngredientCategoryID">
+                @{
+
+                    foreach (var item in Model.CatIdList)
+                    {
+                        if (item.IngredientCategoryId == Model.IngredientCategoryID)
+                        {
+                            <option value=@item.IngredientCategoryId selected="selected">@item.IngredientCategory</option>
+                        }
+                        else
+                        {
+                            <option value=@item.IngredientCategoryId>@item.IngredientCategory</option>
+                        }
+
+
+                    }
+                }
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="IngredientUnit">商品單位</label>
+            <input type="text" class="form-control" id="IngredientUnit" name="IngredientUnit"
+                   placeholder="商品單位">
+        </div>
+        <div class="form-group">
+            <label for="Price">食材售價</label>
+            <input type="text" class="form-control" id="Price" name="Price"
+                   placeholder="價格">
+        </div>
+        <div class="form-group">
+            <label for="AmountInStore">食材庫存</label>
+            <input type="text" class="form-control" id="AmountInStore" name="AmountInStore"
+                   placeholder="庫存量">
+        </div>
+        <div class="form-group">
+            <label for="MerchandiseDescription">商品描述</label>
+            <input type="text" class="form-control" id="MerchandiseDescription" name="MerchandiseDescription"
+                   placeholder="商品描述">
+        </div>
+        <div class="form-group">
+            <input type="checkbox" id="InStoreOrNot" name="InStoreOrNot" />
+            <label for="InStoreOrNot">是否販售</label>
+        </div>
+        <div class="form-group">
+            <input type="file" id="FormfilePic" name="FormfilePic" />
+        </div>
+        <div class="form-group">
+            <img id="ShowPic" name="ShowPic" style="width:300px;height:200px" src="~/img/LOGO.jpg" />
+        </div>
+        <button type="submit" class="btn btn-primary" id="submitbtn">確定新增</button>
+
+        <button class="btn btn-secondary"> @Html.ActionLink("取消", "SessionDemoSend")</button>
+    </form>
+   
+</div>
+@section Scripts{ 
+
+<script>
+    const picupload = document.querySelector("#FormfilePic")
+    const picshow = document.querySelector("#ShowPic")
+
+    picupload.onchange = function (e) {
+        if (picupload.files && picupload.files[0])
+        {
+            picshow.src = URL.createObjectURL(picupload.files[0])
+        }
+
+    }
+</script>
+
+}

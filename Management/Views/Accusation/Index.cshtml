@@ -1,0 +1,90 @@
+﻿@model IEnumerable<Management.ViewModel.CVAccusationcs>
+
+@{
+    ViewData["Title"] = "accusation";
+}
+
+
+<div class="h3 bgmainbar text-center">食譜/討論區舉報頁面</div>
+<p>
+    
+    @Html.ActionLink("管理員新增", "member_accusation_create", new { id = 3 })
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @* @Html.DisplayNameFor(model => model.AccusationRightId)*@
+            </th>
+            <th>
+                檢舉會員編號
+                @*@Html.DisplayNameFor(model => model.MemberId)*@
+            </th>
+            <th>
+                違規項目
+                @*@Html.DisplayNameFor(model => model.Accusation)*@
+            </th>
+            <th>
+                違規區域
+                @*@Html.DisplayNameFor(model => model.AccusedAvatar)*@
+            </th>
+            <th>
+                違規料理/違規留言
+                @*@Html.DisplayNameFor(model => model.AccusedName)*@
+            </th>
+            <th>
+                處理進度
+                @*@Html.DisplayNameFor(model => model.ProgressStatu)*@
+            </th>
+            <th>
+                目前狀態
+                @*@Html.DisplayNameFor(model => model.DisVisible)*@
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @* @Html.DisplayFor(modelItem => item.AccusationRightId)*@
+                    @Html.HiddenFor(modelItem => item.AccusationRightId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MemberId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Accusation)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AccusedAvatar)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AccusedName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProgressStatu)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DisVisible)
+                </td>
+                <td>
+                    @if (item.DisVisible != "正常")
+                    {
+                        <a asp-action="member_deForze" asp-route-id="@item.AccusationRightId" asp-route-AccusedAvatar="@item.AccusedAvatar">解除凍結</a>
+                    }
+                    else
+                    {
+                        <a asp-action="member_Forze" asp-route-id="@item.AccusationRightId" asp-route-AccusedAvatar="@item.AccusedAvatar">凍結</a>
+                    }
+                    @* |
+                        <a asp-action="Details" asp-route-id="@item.AccusationRightId">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.AccusationRightId">Delete</a>*@
+                </td>
+            </tr>
+        }
+    </tbody>
+
+</table>

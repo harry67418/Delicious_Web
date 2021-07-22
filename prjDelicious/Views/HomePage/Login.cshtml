@@ -1,0 +1,207 @@
+﻿@model prjDelicious.ViewModel.CLoginAndCreateViewModel
+@{
+    ViewData["Title"] = "Login";
+    Layout = "_Layout_NoSession";
+}
+@section Style{
+    <link href="/assets/css/login.css" rel="stylesheet">
+}
+<section class="align-items-center">
+    <p class="tip"></p>
+    <div class="cont">
+        <form class="form sign-in" asp-action="Login" method="post">
+            <input value="會員功能demo" type="button" class="btn btn-outline-info btn-sm demoA shadow-none" style="width:120px" />
+            <input value="其他功能demo" type="button" class="btn btn-outline-info btn-sm demoB shadow-none" style="width:120px"/>
+            <h2>會員登入</h2>
+            <div class="form-group">
+                <label asp-for="cLogin.AccountOrEmailOrCell" class="control-label"></label>
+                <input asp-for="cLogin.AccountOrEmailOrCell" class="form-control login-account" />
+                <span asp-validation-for="cLogin.AccountOrEmailOrCell" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="cLogin.Password" class="control-label"></label>
+                <input type="password" asp-for="cLogin.Password" class="form-control login-password" />
+                <span asp-validation-for="cLogin.Password" class="text-danger"></span>
+            </div>
+            <span class="text-danger">@ViewBag.ErrorMessage</span>
+            <div class="form-group">
+                <a href="/UserPage/ForgetPassword" class="forgot-pass"><p class="forgot-pass">忘記密碼?</p></a>
+                <button type="submit" class="submit">登入</button>
+                <button type="button" class="goole-btn" id="btnSignIn">Connect with <span>Google</span></button>
+            </div>
+        </form>
+
+        <div class="sub-cont">
+            <div class="img">
+                <div class="img__text m--up">
+                    <h2>歡迎回來</h2>
+                    <p>世界上最浩瀚的是大海，比大海更浩瀚的是天空，比天空更浩瀚的是人們的心靈么？</p>
+                    <p>不，是嘴巴和肚子！天上飛的、水中游的、地上跑的、土裡鑽的、草里蹦的，全進了人們的嘴巴和肚子！請各位管住嘴，邁開腿，揉揉肚子保健康。</p>
+                </div>
+                <div class="img__text m--in">
+                    <h2>成為料理高手</h2>
+                    <p>人類文明是伴隨着飲食文明而進步的，廚師是創造文明的無名英雄。</p>
+                </div>
+                <div class="img__btn">
+                    <span class="m--up">註冊</span>
+                    <span class="m--in">登入</span>
+                </div>
+            </div>
+
+            <form class="form sign-up create" asp-action="CreateMember" method="post" style="overflow:auto; width: auto;" name="formdata">
+                <input value="demo" type="button" class="btn btn-outline-info btn-sm demo shadow-none" style="width:80px"/>
+                <h2>會員註冊</h2>
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="cCreate.AccountName" class="control-label"></label>
+                    <input asp-for="cCreate.AccountName" class="form-control account" />
+                    <span asp-validation-for="cCreate.AccountName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="cCreate.Password1" class="control-label"></label>
+                    <input type="password" asp-for="cCreate.Password1" class="form-control password1" />
+                    <span asp-validation-for="cCreate.Password1" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="cCreate.Password2" class="control-label"></label>
+                    <input type="password" asp-for="cCreate.Password2" class="form-control password2" />
+                    <span asp-validation-for="cCreate.Password2" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="cCreate.CellNumber" class="control-label"></label>
+                    <input asp-for="cCreate.CellNumber" class="form-control cell" />
+                    <span asp-validation-for="cCreate.CellNumber" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="cCreate.Email" class="control-label"></label>
+                    <input asp-for="cCreate.Email" class="form-control email" />
+                    <span asp-validation-for="cCreate.Email" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="submit" id="send">註冊</button>
+                    @*<button type="button" class="fb-btn">Join with <span>facebook</span></button>*@
+                </div>
+            </form>
+
+        </div>
+    </div>
+</section>
+@section Scripts
+{
+    <script src="/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="https://apis.google.com/js/platform.js?onload=GoogleSigninInit" async defer></script>
+<script>
+    $(".demo").click(function () {
+        $(".password1").val("qwe123123")
+        $(".password2").val("qwe123123")
+        $(".cell").val("0971080029")
+        $(".email").val("delicious13003@gmail.com")
+    })
+
+    $(".demoA").click(function () {
+        $(".login-account").val("qwe123123")
+        $(".login-password").val("qwe123123")
+    })
+
+    $(".demoB").click(function () {
+        $(".login-account").val("zxc123123")
+        $(".login-password").val("zxc123123")
+    })
+
+    //jQuery處理button click event 當畫面DOM都載入時....
+    $(function () {
+        $("#btnSignIn").on("click", function () {
+            GoogleLogin();//Google 登入
+        });
+        $("#btnDisconnect").on("click", function () {
+            Google_disconnect();//和Google App斷連
+        });
+    });
+
+    function GoogleSigninInit() {
+        gapi.load('auth2', function () {
+            gapi.auth2.init({
+                client_id:"769112102767-1rimghla4r1s8oko097o8o35psgofl2n.apps.googleusercontent.com"//必填，記得開發時期要開啟 Chrome開發人員工具 查看有沒有403錯誤(Javascript來源被禁止)
+            });
+        });//end gapi.load
+    }//end GoogleSigninInit function
+
+    function GoogleLogin() {
+        let auth2 = gapi.auth2.getAuthInstance();//取得GoogleAuth物件
+        auth2.signIn().then(function (GoogleUser) {
+            console.log("Google登入成功");
+            let AuthResponse = GoogleUser.getAuthResponse(true);//true會回傳access token ，false則不會，自行決定。如果只需要Google登入功能應該不會使用到access token
+            let id_token = AuthResponse.id_token;//取得id_token
+            console.log(id_token);
+            $.ajax({
+                url: "/HomePage/GoogleLogin",
+                method: "post",
+                data: { id_token: id_token },
+                success: function (msg) {
+                    if (msg) {
+                        alert("登入成功")
+                        window.location.href = "/HomePage/Index";
+                    }
+                    else {
+                        alert("Google登入失敗")
+                    }
+                }
+            });
+        },
+            function (error) {
+                alert("Google登入失敗");
+                console.log(error);
+            });
+
+    }//end function GoogleLogin
+
+    function Google_disconnect() {
+        let auth2 = gapi.auth2.getAuthInstance(); //取得GoogleAuth物件
+
+        auth2.disconnect().then(function () {
+            console.log('User disconnect.');
+        });
+    }
+    //--------------------------------------------
+    document.querySelector('.img__btn').addEventListener('click', function () {
+        document.querySelector('.cont').classList.toggle('s--signup');
+    });
+
+    $("#send").click(function (evt) {
+        let hasnull = false;
+        let haserror = false;
+        $(".create .form-control").each(function () {  //遍历input标签，判断是否有内容未填写
+            if ($(this).val() == "") {
+                hasnull = true;
+            }
+        })
+        $(".create .text-danger").each(function () {  //遍历input标签，判断是否有内容未填写
+            if ($(this).text() != "") {
+                haserror = true;
+            }
+        })
+
+        console.log(hasnull)
+        console.log(haserror)
+        if (!hasnull && !haserror) {
+
+            evt.preventDefault();
+            const formdata = new FormData(document.formdata)
+            fetch('/HomePage/CreateMember', {
+                method: "post",
+                body: formdata
+            }).then(response => response.text())
+                .then(data => {
+                    if (data == "true") {
+                        alert("註冊成功!為您跳轉登入頁面");
+                        $(".m--in").click();
+                    }
+                    else {
+                        alert("註冊失敗");
+                    }
+                })
+        }
+    })
+</script>
+}

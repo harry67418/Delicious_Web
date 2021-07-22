@@ -1,0 +1,204 @@
+﻿@model prjDelicious.ViewModel.CFolderPageViewModel
+@using Microsoft.AspNetCore.Http
+@using prjDelicious.ViewModel
+
+@{
+    ViewData["Title"] = "MyFolder";
+    var login_id = Context.Session.GetString(CDictionary.CURRENT_LOGINED_USERID);
+    var member_id = Convert.ToInt32(Context.Request.Query["memberId"]);
+    var folder_id = Context.Request.Query["folderId"];
+    string thisFolder = "";
+}
+@section Style{
+    <link href="/assets/css/folder.css" rel="stylesheet">
+}
+
+<section class="align-items-center">
+    <div class="container folder-container" id="userinfo">
+        <div class="section-title">
+            <h2>食譜收藏夾</h2>
+        </div>
+
+        <div class="row">
+            <!--選單-->
+            <div class="col-3 folder-list">
+                <div class="list-group">
+                    <a class="list-group-item list-group-item-action" href="/Folder/Index?memberId=@login_id">全部收藏</a>
+                    @foreach (var item in Model.folders)
+                    {
+                        //判斷是哪個收藏夾頁面,給予active
+                        if (item.CollectionFolderId.ToString() == folder_id)
+                        {
+                            thisFolder = item.CollectionFolder;
+                            <a class="list-group-item list-group-item-action active" href="/Folder/Myfolder?memberId=@login_id&folderId=@item.CollectionFolderId">@item.CollectionFolder</a>
+                        }
+                        else
+                        {
+                            <a class="list-group-item list-group-item-action" href="/Folder/MyFolder?memberId=@login_id&folderId=@item.CollectionFolderId">@item.CollectionFolder</a>
+                        }
+                    }
+                </div>
+            </div>
+            <!--收藏夾按鈕編輯區-->
+            <div class="col-3 folder-block">
+                <!--收藏夾名子-->
+                <p class="fs-1 d-inline" style="margin-bottom:20px">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-folder-fill" viewBox="0 0 16 16">
+                        <path d="M9.828 3h3.982a2 2 0 0 1 1.992 2.181l-.637 7A2 2 0 0 1 13.174 14H2.825a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3zm-8.322.12C1.72 3.042 1.95 3 2.19 3h5.396l-.707-.707A1 1 0 0 0 6.172 2H2.5a1 1 0 0 0-1 .981l.006.139z" />
+                    </svg>
+                </p>
+                <p class="fs-1 d-inline folder-title" style="margin-bottom: 20px; word-break: break-word; ">
+                    @thisFolder
+                </p>
+                <!--收藏食譜數量-->
+                <small class="d-block">收藏數量 : @Model.recipes.Count</small>
+                <!--編輯收藏夾按鈕-->
+                <button type="button" class="btn shadow-none d-block btn-outline-info edit-foldername" aria-expanded="false">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                        <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                        <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z" />
+                    </svg>
+                    編輯名稱
+                </button>
+                <!--新增收藏夾按鈕-->
+                <button type="button" class="btn shadow-none d-block btn-outline-info create-folder" aria-expanded="false">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-folder-plus" viewBox="0 0 16 16">
+                        <path d="m.5 3 .04.87a1.99 1.99 0 0 0-.342 1.311l.637 7A2 2 0 0 0 2.826 14H9v-1H2.826a1 1 0 0 1-.995-.91l-.637-7A1 1 0 0 1 2.19 4h11.62a1 1 0 0 1 .996 1.09L14.54 8h1.005l.256-2.819A2 2 0 0 0 13.81 3H9.828a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 6.172 1H2.5a2 2 0 0 0-2 2zm5.672-1a1 1 0 0 1 .707.293L7.586 3H2.19c-.24 0-.47.042-.683.12L1.5 2.98a1 1 0 0 1 1-.98h3.672z" />
+                        <path d="M13.5 10a.5.5 0 0 1 .5.5V12h1.5a.5.5 0 1 1 0 1H14v1.5a.5.5 0 1 1-1 0V13h-1.5a.5.5 0 0 1 0-1H13v-1.5a.5.5 0 0 1 .5-.5z" />
+                    </svg>
+                    新增收藏夾
+                </button>
+                <!--刪除收藏夾按鈕-->
+                <button type="button" class="btn shadow-none d-block btn-outline-danger delete-folder" aria-expanded="false">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                        <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z" />
+                    </svg>
+                    刪除收藏夾
+                </button>
+            </div>
+            <!--食譜列表-->
+            <div class="col-6 recipe-list">
+                @foreach (var item in Model.recipes)
+                {
+                    <div class="card mb-3 recipe">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <img src="@item.Picture" class="img-fluid rounded-start" data-id="@item.RecipeId">
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card-body">
+                                    <h5 class="card-title">@item.RecipeName</h5>
+                                    <p class="card-text">@item.Member.Nickname</p>
+                                    <p class="card-text"><small class="text-muted">@item.PostTime</small></p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="btn-group">
+                                    <button type="button" class="btn shadow-none" data-bs-toggle="dropdown" aria-expanded="false"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16"><path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" /></svg></button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item editfolder" data-loginid="@login_id" data-recipe="@item.RecipeId" href="javascript:void(0)">更改收藏夾</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <!--編輯收藏夾modal-->
+    <div class="modal fade" id="folder-list" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">編輯收藏夾</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    @foreach (var item in Model.folders)
+                    {
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" data-member="@login_id" data-folder="@item.CollectionFolderId" data-recipe="0">
+                            <label class="form-check-label" for="folder-check">
+                                @item.CollectionFolder
+                            </label>
+                        </div>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--編輯收藏夾名稱modal-->
+    <div class="modal fade" id="edit-folder" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">編輯名稱</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!--輸入框-->
+                    <input type="text" class="form-control txt-edit-folder" value="@thisFolder" maxlength="20" />
+                    <p class="count">@thisFolder.Length/20</p>
+                    <!--錯誤訊息-->
+                    <span class="text-danger edit-error"></span>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary edit-send" data-folderid="@folder_id">儲存</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--新增收藏夾modal-->
+    <div class="modal fade" id="create-folder" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">新增收藏夾</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!--輸入框-->
+                    <input type="text" class="form-control txt-create-folder" value="" placeholder="輸入收藏夾名稱..." maxlength="20" />
+                    <p class="count">0/20</p>
+                    <!--錯誤訊息-->
+                    <span class="text-danger create-error"></span>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary create-send" data-memberid="@member_id">建立收藏夾</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--刪除收藏夾modal-->
+    <div class="modal fade" id="delete-folder" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">刪除此收藏夾</h5>
+                    <small class="modal-title delete-title"></small>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!--輸入框-->
+                    <input type="text" class="form-control txt-delete-folder" value="" placeholder="輸入此收藏夾名稱,以確認刪除..." maxlength="20" />
+                    <!--錯誤訊息-->
+                    <span class="text-danger delete-error"></span>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary delete-send" data-folderid="@folder_id" data-memberid="@member_id">確認刪除</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+@section Scripts
+{
+    <script type="text/javascript" src="/js/folder_page.js" charset="UTF-8"></script>
+}

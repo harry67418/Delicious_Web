@@ -1,0 +1,89 @@
+﻿@model prjDelicious.Models.COpayCreateOrder
+
+@{
+    ViewData["Title"] = "SetParameter";
+    Layout = null;
+}
+
+<h1>正在跳轉頁面......</h1>
+    <div class="row">
+        <div class="col-md-4">
+            <form id="formCreditCard" method="post" accept-charset="UTF-8" action="https://payment-stage.opay.tw/Cashier/AioCheckOut/V5" name="sub" hidden>
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="MerchantID" class="control-label"></label>
+                    <input asp-for="MerchantID" class="form-control" />
+                    <span asp-validation-for="MerchantID" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="MerchantTradeNo" class="control-label"></label>
+                    <input asp-for="MerchantTradeNo" class="form-control" />
+                    <span asp-validation-for="MerchantTradeNo" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="MerchantTradeDate" class="control-label"></label>
+                    <input asp-for="MerchantTradeDate" class="form-control" />
+                    <span asp-validation-for="MerchantTradeDate" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="PaymentType" class="control-label"></label>
+                    <input asp-for="PaymentType" class="form-control" />
+                    <span asp-validation-for="PaymentType" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="TotalAmount" class="control-label"></label>
+                    <input asp-for="TotalAmount" class="form-control" />
+                    <span asp-validation-for="TotalAmount" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="TradeDesc" class="control-label"></label>
+                    <input asp-for="TradeDesc" class="form-control" />
+                    <span asp-validation-for="TradeDesc" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ItemName" class="control-label"></label>
+                    <input asp-for="ItemName" class="form-control" />
+                    <span asp-validation-for="ItemName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ReturnURL" class="control-label"></label>
+                    <input asp-for="ReturnURL" class="form-control" />
+                    <span asp-validation-for="ReturnURL" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ChoosePayment" class="control-label"></label>
+                    <input asp-for="ChoosePayment" class="form-control" />
+                    <span asp-validation-for="ChoosePayment" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="StoreID" class="control-label"></label>
+                    <input asp-for="StoreID" class="form-control" />
+                    <span asp-validation-for="StoreID" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ChooseSubPayment" class="control-label"></label>
+                    <input asp-for="ChooseSubPayment" class="form-control" />
+                    <span asp-validation-for="ChooseSubPayment" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ClientBackURL" class="control-label"></label>
+                    <input asp-for="ClientBackURL" class="form-control" />
+                    <span asp-validation-for="ClientBackURL" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="EncryptType" class="control-label"></label>
+                    <input asp-for="EncryptType" class="form-control" />
+                    <span asp-validation-for="EncryptType" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CheckMacValue" class="control-label"></label>
+                    <input asp-for="CheckMacValue" class="form-control" />
+                    <span asp-validation-for="CheckMacValue" class="text-danger"></span>
+                </div>
+            </form>
+        </div>
+    </div>
+
+<script>
+    document.sub.submit();
+</script>

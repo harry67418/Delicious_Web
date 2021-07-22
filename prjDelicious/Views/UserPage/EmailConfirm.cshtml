@@ -1,0 +1,134 @@
+﻿@using Microsoft.AspNetCore.Http
+@using prjDelicious.ViewModel
+@model prjDelicious.ViewModel.CEmailConfirmViewModel
+
+@{
+    ViewData["Title"] = "EmailConfirm";
+}
+@section Style{
+    <link href="/assets/css/setting.css" rel="stylesheet">
+}
+<section class="align-items-center"  style="height:65%">
+    <div class="container" id="userinfo">
+        <div class="row">
+                <div class="col-md-4">
+                    <form asp-action="EmailConfirm" name="formdata">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-group" hidden>
+                            <label asp-for="MemberId" class="control-label"></label>
+                            <input asp-for="MemberId" class="form-control" id="id"/>
+                            <span asp-validation-for="MemberId" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="EmailConfirm" class="control-label"></label>
+                            <input asp-for="EmailConfirm" class="form-control txtemail" maxlength="6" disabled/>
+                            <span asp-validation-for="EmailConfirm" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-primary" type="button" id="sendmail">
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" id="loading" hidden></span>
+                                獲取驗證碼
+                            </button>
+                            <input type="submit" value="確認" class="btn btn-primary" id="send" disabled />
+                        </div>
+                    </form>
+                    @*<div class="loadingdiv" id="loading" style="display: none">
+                        <img src="/assets/img/loading.gif" />
+                    </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script> 
+        var countdown = 60;
+        let settime = function (obj) {
+            $("#send").removeAttr("disabled")
+            if (countdown == 0) {
+                obj.removeAttr("disabled");
+                obj.text("獲取驗證碼");
+                countdown = 60;
+                return;
+            } else {
+                obj.text("重新傳送(" + countdown + ")");
+                countdown--;
+            }
+            setTimeout(function () {
+                settime(obj)
+            }
+                , 1000)
+        }
+
+        $("#sendmail").click(function () {
+            $.ajax({
+                beforeSend: function () {
+                    $("#loading").removeAttr("hidden");
+                    $("#sendmail").attr("disabled", "disabled");
+                },
+                url: '/UserPage/SendEmailConfirm',
+                type: 'post',
+                data: { "id": $("#id").val() },
+                success: function (data) {
+                    if (data) {
+                        alert("已發送驗證碼至您的信箱!")
+                        $(".txtemail").removeAttr("disabled");
+                        settime($("#sendmail"));
+                    }
+                    else {
+                        alert("信件寄送失敗");
+                    }
+                },
+                complete: function () {
+                    $("#loading").attr("hidden", "hidden")
+                    $("#send").removeAttr("disabled")
+                },
+                error: function (data) {
+                    alert("信件寄送失敗");
+                }
+            })
+        })
+        $("#send").click(function (evt) {
+            let hasnull = false;
+            $("form .form-control").each(function () {
+                if ($(this).val() == "") {
+                    hasnull = true;
+                }
+            })
+
+            if (hasnull == false) {
+                evt.preventDefault();
+                const data = new FormData(document.formdata)
+                $.ajax({
+                    beforeSend: function () {
+                        $('#loading').css("display", "");
+                    },
+                    url: '/UserPage/EmailConfirm',
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    type: "post",
+                    data: data,
+                    success: function (data) {
+                        console.log(data)
+                        if (data) {
+                            alert("驗證成功,為您跳轉頁面");
+                            window.location.href = "/UserPage/Setting?id="+$("#id").val();
+                        }
+                        else {
+                            alert("輸入驗證碼錯誤");
+                        }
+                    },
+                    complete: function () {
+                        $('#loading').css("display", "none");
+                    },
+                    error: function (data) {
+                        alert("驗證失敗,請重新再操作一次");
+                    }
+                })
+            }
+        })
+    </script>
+}

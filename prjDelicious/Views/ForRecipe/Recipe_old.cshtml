@@ -1,0 +1,762 @@
+﻿@model prjDelicious.ViewModel.CRecipeViewModel
+@using Microsoft.AspNetCore.Http
+@using prjDelicious.ViewModel
+
+@{
+    ViewData["Title"] = "Recipe";
+    int login_id = Convert.ToInt32(Context.Session.GetString(CDictionary.CURRENT_LOGINED_USERID));//登入者
+}
+
+@section Style{
+    <link href="/assets/css/comment.css" rel="stylesheet">
+}
+<section class="align-items-center">
+    <div class="container" style="border: double; border-width: 10px; border-color: #f5b971; border-radius: 10px; ">
+        <div>
+            @if (Model.MemberId == login_id)
+            {
+            <div style="display:flex">
+                <button type="button" class="btn btn-primary" onclick="javascript: location.href=`/ForRecipe/Edit_Recipe?id=@Model.recipeId`" style="font-weight:bolder; border-color:black">編輯</button> &thinsp;
+                <button type="button" class="btn btn-danger" style="font-weight:bolder; border-color:black" onclick="confirmdelete()">刪除</button>                
+            </div>
+            }
+            <div style="text-align:center; padding-top:10px; width:500px">
+                <h1 style="text-align:center; font-weight:bolder">@Html.DisplayFor(model => model.recipeName)</h1>
+            </div>
+            <div style="display: flex">
+                <div>
+                    <div style="width:500px; height:400px; overflow:hidden; border-radius:10px">
+                        <img src="@Html.DisplayFor(model => model.recipePicture)" style="width:100%; height:100%">
+                    </div>
+                    <div style="margin:10px 0px;">
+                        @if (Model.recipeVideo != "" && Model.recipeVideo != null)
+                        {
+                            <button type="button" class="btn btn-danger" onclick="window.open('@Model.recipeVideo')"><i class="bi bi-globe2"></i></button>
+                        }
+                        <button type="button" class="btn btn-danger shadow-none editfolder" data-recipe="@Model.recipeId" data-loginid="@login_id" title="編輯/加入收藏"><i class="bi bi-bookmark-plus"></i></button>
+                        <button type="button" class="btn btn-danger shadow-none gotolike" data-rid="@Model.recipeId" data-mid="@login_id" title="加入喜歡"><i class="bi bi-hand-thumbs-up"></i></button>
+                        <button type="button" class="btn btn-danger shadow-none gotowish" data-rid="@Model.recipeId" data-mid="@login_id" title="加入願望清單"><i class="bi bi-cart-plus"></i></button>
+                        <button type="button" id="btnAccusation" class="btn shadow-none btn-secondary" data-rid="@Model.recipeId" data-mid="@login_id" title="檢舉"><i class="bi bi-exclamation-triangle-fill"></i></button>
+                        &emsp;&emsp;<span style="font-family:Arial; font-size:15px; color:black">@Html.DisplayNameFor(model => model.postTime)@Html.DisplayFor(model => model.postTime)</span>
+                    </div>
+                </div>
+                <div style="display: flex;" class="d-flex align-items-center">
+                    <div style="width:200px">
+                        <div class="text-center">
+                            <img src="/assets/img/category.png" width="150" height="150" />
+                        </div>
+                        <h2 class="text-center">@Html.DisplayNameFor(model => model.recipeCategory)</h2>
+                        <div class="text-center">
+                            <h3> @Html.DisplayFor(model => model.recipeCategory)</h3>
+                        </div>
+                    </div>
+                    <div style="width: 200px;">
+                        <div class="text-center">
+                            <img src="/assets/img/member.png" width="150" height="150" />
+                        </div>
+                        <h2 class="text-center"> @Html.DisplayNameFor(model => model.Nickname)</h2>
+                        <div class="text-center">
+                            <h3>@Html.DisplayFor(model => model.Nickname)</h3>
+                        </div>
+                    </div>
+                    <div style="width:200px">
+                        <div class="text-center">
+                            <img src="/assets/img/person.png" width="150" height="150" />
+                        </div>
+                        <h2 class="text-center">  @Html.DisplayNameFor(model => model.forHowmany)</h2>
+                        <div class="text-center">
+                            <h3>@Html.DisplayFor(model => model.forHowmany)</h3>
+                        </div>
+                    </div>
+                    <div style="width:200px">
+                        <div class="text-center">
+                            <img src="/assets/img/time.png" width="150" height="150" />
+                        </div>
+                        <h2 class="text-center">@Html.DisplayNameFor(model => model.timeNeed)</h2>
+                        <div class="text-center">
+                            <h3>@Html.DisplayFor(model => model.timeNeed)</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; margin-top:15px; padding-left:5px;">
+                <h3 style="font-weight: bolder">@Html.DisplayNameFor(model => model.recipeDescription)</h3>&ensp;&ensp;&ensp;<h4><i class="bi bi-eye"></i>&thinsp;@Html.DisplayFor(model => model.views)</h4>
+            </div>
+            <div style="padding: 15px 5px; background-color: #EDCFA9; border-radius:10px">
+                <p style="font-size: 20px; font-weight:400">@Html.DisplayFor(model => model.recipeDescription)</p>
+            </div>
+            <div style="padding:5px;">
+                <h3 style="font-weight: bolder">食材</h3>
+                <table class="table table-striped" style="background-color: #EDCFA9">
+                    <thead style="text-align: center">
+                        <tr style="background-color:#e89f71">
+                            <td><h4 style="margin:0px; font-weight:bolder">項目</h4></td>
+                            <td><h4 style="margin:0px; font-weight:bolder">份量</h4></td>
+                        </tr>
+                    </thead>
+                    <tbody style="text-align: center">
+                        @foreach (var item in Model.list_ingredientRecords)
+                        {
+                            <tr>
+                                <td style="font-weight: bolder; font-size:large">@item.ingredient</td>
+                                <td style="font-weight: bolder; font-size:large">@item.ingredientAmountForUse@item.unt</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <h3 style="font-weight: bolder">步驟</h3>
+            <div style="background-color:#EDCFA9; border-radius: 10px;">
+                <table class="table table-striped">
+                    <tbody style="text-align: left">
+                        @foreach (var item in Model.list_step)
+                        {
+                            <tr>
+                                <td style="display: flex; padding:10px; border-radius:10px">
+                                    <div style=" width:150px; height:150px; border-radius:10%; overflow:hidden">                                                                              
+                                        <img src="@item.stepPicture" style="width:150px; height:150px">                                       
+                                    </div>
+                                    <div style="padding:0px 10px; width:1100px">
+                                        <h3>@item.stepNumber</h3>
+                                        <p style="font-weight: bolder">@item.step</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="align-items-center">
+    <div class="container comment" style="background-color: #EDCFA9; ">
+        <!--標題-->
+        <div class="title">
+            <h3>所有回應(@(Model.list_comment.Count()))</h3>
+        </div>
+        <!--留言區-->
+        @{
+            int floor = 0;
+            if (Model.list_comment != null)//如果這則食譜有評論
+            {
+                foreach (var item in Model.list_comment)//迴圈加入留言
+                {
+                    floor++;//樓層
+                    if (item._comment.DeleteOrNot == true)
+                    {
+                        <div class="row combody">
+                            <div class="col-sm-1">
+                                <img src="/assets/img/figure/default.jpg" class="control-label rounded-circle figure" />
+                            </div>
+                            <div class="col-sm-3 row">
+                                <h4><i class="bi bi-person-fill"></i>此訊息已被刪除</h4>
+                                <small>此訊息已被刪除</small>
+                                <span>@(floor)樓</span>
+                            </div>
+                            <div class="col-sm-4">
+                            </div>
+                            <div class="col-sm-4">
+                            </div>
+                            <span class="contant">
+                                此訊息已被原作者刪除
+                            </span>
+                        </div>
+                    }//被刪除
+                    else if (item._comment.DisVisible == true)
+                    {
+                        <div class="row combody">
+                            <div class="col-sm-1">
+                                <img src="/assets/img/figure/default.jpg" class="control-label rounded-circle figure" />
+                            </div>
+                            <div class="col-sm-3 row">
+                                <h4><i class="bi bi-person-fill"></i>此訊息已被刪除</h4>
+                                <small>此訊息已被刪除</small>
+                                <span>@(floor)樓</span>
+                            </div>
+                            <div class="col-sm-4">
+                            </div>
+                            <div class="col-sm-4">
+                            </div>
+                            <span class="contant">
+                                此訊息因違反社群規定,已遭管理員屏蔽
+                            </span>
+                        </div>
+                    }//被檢舉下架
+                    else//正常顯示
+                    {
+                        <div class="row combody">
+                            <div class="col-sm-1">
+                                <img src="@Model.FigureSrc@item._member.Figure" class="control-label rounded-circle figure" />
+                            </div>
+                            <div class="col-sm-3 row">
+                                <h4><i class="bi bi-person-fill">@item._member.Nickname</i></h4>
+                                <small>@item._member.Rank.RankName</small>
+                                <span>@(floor)樓-@item._comment.PostTime</span>
+                            </div>
+                            <div class="col-sm-5">
+                            </div>
+                            <div class="col-sm-3">
+                                <div id="commentbar" class="commentbar">
+                                    @if (login_id != 0)//如果有登入,才有按鈕
+                                    {
+                                        <ul id="ul-features">
+                                            @if (Model.list_likecomment != null)//如果會員有喜歡過評論
+                                            {
+                                                bool isMatch = false;
+                                                foreach (var like in Model.list_likecomment)//該會員喜歡過的評論,迴圈判斷給甚麼按鈕
+                                                {
+                                                    if (like.CommentId == item._comment.CommentId)//如果有喜歡過該則評論,則為紅心按鈕
+                                                    {
+                                                        isMatch = true;
+                                                        <li>
+                                                            <button class="btn btn-outline-danger dislike" data-id="@item._comment.CommentId" data-loginid="@login_id">
+                                                                <span>@item.likeCouint</span>
+                                                                <i class="bi bi-heart-fill"></i>
+                                                            </button>
+                                                        </li>
+                                                    }
+                                                }
+                                                if (!isMatch)//如果沒有喜歡過該則評論,則為黑心按鈕
+                                                {
+                                                    <li>
+                                                        <button class="btn btn-outline-secondary like" data-id="@item._comment.CommentId" data-loginid="@login_id">
+                                                            <span>@item.likeCouint</span>
+                                                            <i class="bi bi-heart"></i>
+                                                        </button>
+                                                    </li>
+                                                }
+
+                                            }
+                                            else //如果會員都沒有喜歡過任何評論,全為黑心按鈕
+                                            {
+                                                <li>
+                                                    <button class="btn btn-outline-secondary like" data-id="@item._comment.CommentId">
+                                                        <i class="bi bi-heart"></i>
+                                                        <span>@item.likeCouint</span>
+                                                    </button>
+                                                </li>
+                                            }
+                                            <!--如果不是自己的評論就放入檢舉按鈕-->
+                                            @if (item._member.MemberId != login_id)
+                                            {
+                                                <li>
+                                                    <button class="btn btn-secondary report" id="report" data-id="@item._comment.CommentId" data-loginid="@login_id">
+                                                        <i class="bi bi-exclamation-circle-fill"></i>
+                                                        <span>檢舉</span>
+                                                    </button>
+                                                </li>
+                                            }
+                                            <!--如果該則留言是登入會員的,加入編輯刪除按鈕-->
+                                            @if (item._member.MemberId == login_id)
+                                            {
+                                                <li class='dropdown'>
+                                                    <i class='bi bi-list-ul'></i>
+                                                    <ul id='ul-member'>
+                                                        <li id="edit-com"><a href="javascript:void(0)" class="editcom" data-id="@item._comment.CommentId">編輯此留言</a></li>
+                                                        <li id="del-com"><a href="javascript:void(0)" onclick="delcom(this.dataset.id)" data-id="@item._comment.CommentId">刪除此留言</a></li>
+                                                    </ul>
+                                                </li>
+                                            }
+                                        </ul>
+                                    }
+                                </div>
+                            </div>
+                            <span class="contant">
+                                <!--判斷有無圖片-->
+                                @if (item._comment.Picture != null)
+                                {
+                                    <img src="@(Model.CommentPicsSrc + item._comment.Picture)" width="100" height="100" />
+                                }
+                                @item._comment.Comment
+                            </span>
+                        </div>
+                    }
+                }
+            }
+        }
+    </div>
+    <!-- Modal -->
+    @if (login_id != 0)
+    {
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl" role="document" style="padding:20px 10px 10px 20px; border-radius: 10px;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">編輯留言<span></span></h5>
+                    </div>
+                    <div class="modal-body">
+                        <form method="post" enctype="multipart/form-data" name="editform">
+                            <div class="container addbody">
+                                <div class="row">
+                                    <div class="col-sm-1">
+                                        <img src="@Model.FigureSrc@Model.member.Figure" class="control-label rounded-circle figure comfigure" style="border:2px solid #e6e6e6" />
+                                    </div>
+                                    <div class="col-sm-7">
+                                        <div class="textbox edit-txt" contentEditable="true" style="border-radius: 10px; background-color: #EDCFA9; padding:20px; font-size:20px">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2" style="position: relative; ">
+                                        <div class="avatar-zone" style="border-radius:10px;">
+                                            <img id="edit-comimg" />
+                                        </div>
+                                        <div>
+                                            <input type="file" class="upload_btn" id="edit-selfigure" name="photo" />
+                                            <input class="overlay-layer bi bi-image btn btn-primary" value="加入圖片">
+                                        </div>
+                                        <div>
+                                            <input type="button" class="btn btn-outline-secondary" id="delimg" value="移除圖片" style="margin-top:5px" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+                        <button type="button" class="btn btn-primary" id="edit-send" data-recipeid="@(Model.recipeId)" data-loginid="@login_id">編輯</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--輸入留言-->
+        <form method="post" enctype="multipart/form-data" name="comform">
+            <div class="container addbody" style="background-color:#f5b971; padding:20px 10px 10px 20px; border-radius: 10px;">
+                <div class="row">
+                    <div class="col-sm-1">
+                        <img src="@Model.FigureSrc@Model.member.Figure" class="control-label rounded-circle figure" id="comfig" style="margin-top:10px; margin-right:10px" />
+                        <span id="comnick" hidden>@Model.member.Nickname</span>
+                        <span id="comrank" hidden>@Model.member.Rank.RankName</span>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="textbox" contentEditable="true">
+                        </div>
+                    </div>
+                    <div class="col-sm-2" style="position: relative; background-color: #f5b971; padding:10px; margin-left:-5px; border-radius:10px">
+                        <div class="avatar-zone" style="border-radius:10px;">
+                            <img id="comimg" />
+                        </div>
+                        <div>
+                            <input type="file" class="upload_btn" id="selfigure" name="photo" />
+                            <input class="overlay-layer bi bi-image btn btn-primary" value="加入圖片">
+                        </div>
+                        <div>
+                            <input type="button" class="btn btn-outline-secondary" id="delimg" value="移除圖片" style="margin-top:5px" />
+                            <input type="submit" class="btn btn-outline-primary btn-send" data-recipeid="@(Model.recipeId)" data-loginid="@login_id" value="送出留言" style="margin-left:10px">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="container addbody" hidden>
+            <h3>登入以使用留言功能</h3>
+        </div>
+    }
+    else
+    {
+        <!--輸入留言-->
+        <input type="file" class="upload_btn" id="edit-selfigure" name="photo" hidden />
+        <input type="file" class="upload_btn" id="selfigure" name="photo" hidden />
+
+        <div class="container addbody">
+            <h3>登入以使用留言功能</h3>
+        </div>
+    }
+    <!--編輯收藏夾modal-->
+    <div class="modal fade" id="folder-list" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">編輯收藏夾</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    @if (Model.list_Folders != null)
+                    {
+                        foreach (var item in Model.list_Folders)
+                        {
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" data-member="@login_id" data-folder="@item.CollectionFolderId" data-recipe="0">
+                                <label class="form-check-label" for="folder-check">
+                                    @item.CollectionFolder
+                                </label>
+                            </div>
+                        }
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+@section Scripts{
+    <script src="~/js/folder_page.js"></script>
+    <script>
+
+
+        const selfigure = document.querySelector("#selfigure");
+        const figure = document.querySelector("#comimg");
+        selfigure.onchange = function (e) {
+            if (selfigure.files && selfigure.files[0]) {
+                figure.src = URL.createObjectURL(selfigure.files[0])
+            }
+        }
+
+        const edit_selfigure = document.querySelector("#edit-selfigure")
+        const edit_figure = document.querySelector("#edit-comimg")
+        edit_selfigure.onchange = function (e) {
+            if (edit_selfigure.files && edit_selfigure.files[0]) {
+                edit_figure.src = URL.createObjectURL(edit_selfigure.files[0])
+            }
+        }
+
+        $("#edit-delimg").click(function (evt) {
+            $("#edit-comimg").attr("src","")
+        })
+
+        $("#delimg").click(function (evt) {
+            $("#comimg").attr("src","")
+        })
+
+        $(".btn-send").click(function (evt) {
+            evt.preventDefault();
+            if ($(".textbox").text().trim(" ") == "") {
+                alert("請輸入留言,且不可空白~");
+                return;
+            }
+            const data = new FormData(document.comform)
+            data.append("RecipeID",$(this).data("recipeid"))
+            data.append("MemberID", $(this).data("loginid"))
+            data.append("Comment", $(".textbox").text())
+            data.append("photo", $("#comimg").attr("src"))
+            $.ajax({
+                beforeSend: function () {
+
+                },
+                url: '/ForRecipe/AddComment',
+                cache: false,
+                contentType: false,
+                processData: false,
+                type: "post",
+                data: data,
+                success: function (data) {
+                    if (data != null) {
+                        if (data._comment.picture != null) {
+                            var xmlstring2 = `<div class='row combody'><div class='col-sm-1'><img src='${$("#comfig").attr("src")}' class='control-label rounded-circle figure' /></div><div class='col-sm-3 row'><h4><i class='bi bi-person-fill'>${$("#comnick").text()}</i></h4><small>${$("#comrank").text()}</small><span>@(floor+1)樓-${data._comment.postTime}.</span></div><div class='col-sm-5'></div><div class='col-sm-3'><div id='commentbar' class='commentbar'><ul id='ul-features'><li><button class='btn btn-outline-secondary like' data-id='${data._comment.commentId}'><span>0</span><i class='bi bi-heart'></i></button></li><li class='dropdown'><i class='bi bi-list-ul'></i><ul id='ul-member'><li id='edit-com'><a href='javascript:void(0)' class='editcom' data-id='${data._comment.commentId}'>編輯此留言</a></li><li id='del-com'><a href='javascript:void(0)' onclick="delcom(this.dataset.id)" data-id='${data._comment.commentId}'>刪除此留言</a></li></ul></li></ul></div></div><span class='contant'><img src='@(Model.CommentPicsSrc)${data._comment.picture}' width="100" height="100"/>${data.comment}</span></div>`
+                        }
+                        else {
+                            var xmlstring2 = `<div class='row combody'><div class='col-sm-1'><img src='${$("#comfig").attr("src")}' class='control-label rounded-circle figure' /></div><div class='col-sm-3 row'><h4><i class='bi bi-person-fill'>${$("#comnick").text()}</i></h4><small>${$("#comrank").text()}</small><span>@(floor+1)樓-${data._comment.postTime}.</span></div><div class='col-sm-5'></div><div class='col-sm-3'><div id='commentbar' class='commentbar'><ul id='ul-features'><li><button class='btn btn-outline-secondary like' data-id='${data._comment.commentId}'><span>0</span><i class='bi bi-heart'></i></button></li><li class='dropdown'><i class='bi bi-list-ul'></i><ul id='ul-member'><li id='edit-com'><a href='javascript:void(0)' class='editcom' data-id='${data._comment.commentId}'>編輯此留言</a></li><li id='del-com'><a href='javascript:void(0)' onclick="delcom(this.dataset.id)" data-id='${data._comment.commentId}'>刪除此留言</a></li></ul></li></ul></div></div><span class='contant'>${data.comment}</span></div>`
+                        }
+
+
+                        $(".comment").append(xmlstring2);
+
+                        alert("新增留言成功");
+                        $(".textbox").text("");
+                        $("#comimg").attr("src", "");
+                    }
+                    else {
+                        alert("新增留言失敗")
+                    }
+                },
+                complete: function () {
+
+                },
+                error: function (data) {
+                    alert("新增留言失敗");
+                }
+            })
+        })
+
+        function delcom(id) {
+            if (confirm("確實要刪除嗎?")) {
+                $.ajax({
+                    beforeSend: function () {
+
+                    },
+                    url: '/ForRecipe/DeleteComment',
+                    type: "POST",
+                    data: "id=" + id,
+                    success: function (data) {
+                        if (data) {
+                            alert("刪除留言成功");
+                            location.reload();
+                        }
+                        else {
+                            alert("刪除留言失敗")
+                        }
+                    },
+                    complete: function () {
+
+                    },
+                    error: function (data) {
+                        alert("刪除留言失敗");
+                    }
+                })
+            }
+        }
+
+        var commentid = 0;
+        $(document).on("click", ".editcom", function (evt) {
+            var myModal = new bootstrap.Modal(document.getElementById('exampleModal'))
+            myModal.toggle()
+            myModal.show()
+            commentid = $(this).data("id");
+            const txt = $(this).parents(".row").children("span").text();
+            const img = $(this).parents(".row").children("span").children("img").attr("src");
+            $(".edit-txt").text(txt);
+            $("#edit-comimg").attr("src", img)
+        })
+
+        $("#edit-send").click(function (evt) {
+            evt.preventDefault();
+            const data = new FormData(document.editform)
+            data.append("RecipeID", $(this).data("recipeid"));
+            data.append("MemberID", $(this).data("loginid"));
+            data.append("CommentID", commentid)
+            data.append("Comment", $(".textbox").text())
+            data.append("photo", $("#edit-comimg").attr("src"))
+
+            $.ajax({
+                beforeSend: function () {
+
+                },
+                url: '/ForRecipe/EditComment',
+                cache: false,
+                contentType: false,
+                processData: false,
+                type: "post",
+                data: data,
+                success: function (data) {
+                    if (data) {
+                        alert("修改留言成功");
+                        location.reload();
+                    }
+                    else {
+                        alert("修改留言失敗")
+                    }
+                },
+                complete: function () {
+
+                },
+                error: function (data) {
+                    alert(data);
+                }
+            })
+        })
+
+        $(document).on("click", ".dislike", function (evt) {
+            $(this).attr("class", "btn btn-outline-secondary like");
+            $(this).children("i").attr("class", "bi bi-heart");
+            const num = parseInt($(this).children("span").text()) - 1;
+            $(this).children("span").text(num);
+
+            $.ajax({
+                beforeSend: function () {
+
+                },
+                url: '/ForRecipe/DislikeComment',
+                type: "post",
+                data: { "commentid": $(this).data("id") ,"memberid":$(this).data("loginid")},
+                success: function (data) {
+                    if (!data) {
+                        alert("取消喜歡失敗")
+                        $(this).attr("class", "btn btn-outline-danger dislike");
+                        $(this).children("i").attr("class", "bi bi-heart-fill");
+                        const num = parseInt($(this).children("span").text()) + 1;
+                        $(this).children("span").text(num);
+                    }
+                },
+                complete: function () {
+
+                },
+                error: function (data) {
+                    alert(data);
+                }
+            })
+        })
+
+        $(document).on("click", ".like", function (evt) {
+            $(this).attr("class","btn btn-outline-danger dislike");
+            $(this).children("i").attr("class", "bi bi-heart-fill");
+            const num = parseInt($(this).children("span").text()) + 1;
+            $(this).children("span").text(num);
+
+            $.ajax({
+                beforeSend: function () {
+
+                },
+                url: '/ForRecipe/LikeComment',
+                type: "post",
+                data: { "commentid": $(this).data("id") ,"memberid":$(this).data("loginid")},
+                success: function (data) {
+                    if (!data) {
+                        alert("喜歡評論失敗")
+                        $(this).attr("class", "btn btn-outline-secondary like");
+                        $(this).children("i").attr("class", "bi bi-heart");
+                        const num = parseInt($(this).children("span").text()) - 1;
+                        $(this).children("span").text(num);
+                    }
+                },
+                complete: function () {
+
+                },
+                error: function (data) {
+                    alert(data);
+                }
+            })
+        })
+
+        $("#btnAccusation").on("click", function (evt) {
+
+            const login_id = $(this).data("loginid");
+            const comment_id = $(this).data("id");
+            if (@login_id > 0) {
+                window.open(`/accusations/RecipeAccusationCreate?id=${@login_id}&_AccusedID=${@Model.recipeId}`, "檢舉食譜", config = 'height=500,width=500');
+            }
+            else {
+                window.location.href ='/homepage/login';
+            }
+
+        })
+        $(document).on("click", "#report", function (evt) {
+            const login_id = $(this).data("loginid");
+            const comment_id = $(this).data("id");
+            if (@login_id > 0) {
+            window.open(`/accusations/CommentAccusationCreate?id=${@login_id}&_AccusedID=${comment_id}`, "檢舉留言", config = 'height=500,width=500');
+            }
+            else {
+                window.location.href = '/homepage/login';
+            }
+        })
+
+
+        if (@login_id== 0) {//若使用者未登入會員，將加入喜歡及願望的button無顯示顏色
+            $(".gotolike").removeClass("btn-danger");
+            $(".gotowish").removeClass("btn-danger");
+        }
+         //將使用者點選的食譜加入喜歡清單中
+        document.addEventListener("DOMContentLoaded", function () {
+            $.ajax({
+                url: "/LikeRecipe/CountReapt",
+                data: { "memberid":@login_id, "recipeid":@Model.recipeId},
+                contentType: "text/plain"
+            }).done((function (data) {
+                if (data == 0) {
+                    $(".gotolike").removeClass("btn-danger");
+                }
+            })).fail(function (error) {
+                alert(error.status + ":" + error.statusText);
+            })
+
+            $(document).on("click", ".gotolike", function () {
+                if (@login_id== 0) {//如果使用者沒有登入會員，按了加入喜歡的btn後跳轉登入畫面
+                    alert("請先登入會員");
+                    window.location.href = '/homepage/login';
+                    return
+                }
+
+                let memberid = $(this).data("mid");
+                let recipeid = $(this).attr("data-rid");
+                if ($(this).hasClass("btn-danger")) {//取消喜歡
+                    $(this).toggleClass("btn-danger");
+                    fetch('/LikeRecipe/lookforLikeRecipeid/?memberid=' + memberid + '&recipeid=' + recipeid)
+                        .then(Response => {
+                            alert("取消喜歡此食譜");
+                            return Response.text();
+                        }).catch(error => {
+                            $(this).toggleClass("btn-danger");
+                        });
+                }
+                else {//新增喜歡
+                    $(this).toggleClass("btn-danger");
+                    fetch('/LikeRecipe/AddIntoLike/?memberid=' + memberid + '&recipeid=' + recipeid)
+                        .then(Response => {
+                            alert("新增喜歡食譜")
+                            return Response.text();
+                        }).catch(error => {
+                            $(this).toggleClass("btn-danger");
+                        });
+                }
+            })
+        })
+
+        //將使用者點選的食譜加入願望清單中
+        document.addEventListener("DOMContentLoaded", function () {
+            $.ajax({
+                url: "/WishList/CountReapt",
+                data: { "memberid":@login_id, "recipeid":@Model.recipeId},
+                contentType: "text/plain"
+            }).done((function (data) {
+                if (data == 0) {
+                    $(".gotowish").removeClass("btn-danger");
+                }
+            })).fail(function (error) {
+                alert(error.status + ":" + error.statusText);
+            })
+
+            $(document).on("click", ".gotowish", function () {
+                if (@login_id== 0) {//如果使用者沒有登入會員，按了加入願望的btn後跳轉登入畫面
+                    alert("請先登入會員");
+                    window.location.href = '/homepage/login';
+                    return 
+                }
+               
+                let memberid = $(this).data("mid");
+                let recipeid = $(this).attr("data-rid");
+
+                if ($(this).hasClass("btn-danger")) {//取消加入願望清單
+                    $(this).toggleClass("btn-danger");
+                    fetch('/WishList/Delete?memberid='+memberid+'&recipeid=' + recipeid)
+                        .then(Response => {
+                            alert("取消加至願望清單");
+                            return Response.text();
+                        }).catch(error => {
+                            $(this).toggleClass("btn-danger");
+                        })
+                }
+                else {//新增至願望清單
+                    $(this).toggleClass("btn-danger");
+                    fetch('/WishList/AddIntoWish/?memberid=' + memberid + '&recipeid=' + recipeid)
+                        .then(Response => {
+                            return Response.text(); // 使用 text() 可以得到純文字 String
+                        }).then(result => {
+                            if (result == "已加至願望清單內") {
+                                alert(result);
+                            }
+                            else {
+                                alert(result);
+                            }
+                        }).catch(error => {
+                            $(this).toggleClass("btn-danger");
+                        });
+                }
+            })
+        })
+        function confirmdelete() {
+            if (!confirm("確認要刪除？")) {
+                window.event.returnValue = false;
+            }
+            else {
+                fetch(`/ForRecipe/Delete_Recipe?id=@Model.recipeId`).then(Response => {
+                    return Response.json();
+                }
+                ).then(result => {
+                    if (result) {
+                        alert("已刪除，即將回個人發表食譜頁面");
+                        window.location.href = "/UserPage/Profile?id=@Model.MemberId";
+                    }
+                });
+
+            }
+        }
+
+    </script>
+}
+
+
+

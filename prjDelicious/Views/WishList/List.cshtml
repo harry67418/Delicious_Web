@@ -1,0 +1,179 @@
+﻿@model prjDelicious.ViewModel.CWishListViewModel
+@using Microsoft.AspNetCore.Http
+@using prjDelicious.ViewModel
+
+@{
+    ViewData["Title"] = "List";
+    int login_id = Convert.ToInt32(Context.Session.GetString(CDictionary.CURRENT_LOGINED_USERID));
+}
+<section id="portfolio" class="portfolio">
+    <div class="container">
+
+        <div class="section-title" style="padding-bottom:0;">
+            <h2>食譜食材購買清單</h2>
+            <p>分好類，好購買!</p>
+        </div>
+
+        <a href="/Shopper/Checkout" class="btn btn-outline-info col-1" style="position:fixed;right: 0;top:160px">結帳去<i class="fas fa-shopping-cart"></i></a>
+        <div class="dropdown shopcart">
+            <input type="button" class="btn btn-warning dropdown-toggle" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false" style="position:fixed;right: 0;top:280px;z-index:1" value="購物清單" />
+
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                <li>尚未加入品項</li>
+            </ul>
+        </div>
+        @{
+            var count = 0;
+            if (Model.list.Count == 0)
+            {
+                <div class="text-center">
+                    <h1>您目前沒有任何資料</h1>
+                    <a class="btn btn-outline-secondary" href='@Url.Action("Index","HomePage")'>回到食譜頁面</a>
+                </div>
+            }
+            else
+            {<div style="margin-bottom:5rem;margin-top:-20px">
+                    @foreach (var item in Model.list)
+                    {
+                        count++;
+                        <div class="accordion">
+
+                            <label id="@item.trecipe.RecipeId" for="tab+@count">
+                                @item.trecipe.RecipeName
+                                <button class="btn btn-danger btnstyle"><i class="fas fa-trash-alt"></i></button>
+                            </label>
+                            <div class="box">
+                                <input type="radio" name="tab" id="tab+@count" />
+                                <div class="content">
+                                    <P>食譜類別 @item._recipecategorie</P>
+                                    <img src="@item.trecipe.Picture" class="col-3 row-cols-3" />
+                                    <table class="table table-hover table-primary">
+                                        <thead>
+                                            <tr>
+                                                <td>食材</td>
+                                                <td>用量</td>
+                                                <td>單位</td>
+                                                <td>商品販售狀態</td>
+                                                <td>商品售價</td>
+                                                <td>商品單位</td>
+                                                <td>食材購買數量</td>
+                                                <td></td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var q in item._ingredientslist)
+                                            {
+                                                <tr>
+                                                    <td>@q._ingredient.Ingredient</td>
+                                                    <td>@q._ingredientrecords.IngredientAmountForUse</td>
+                                                    <td>@q._ingredientrecords.Unt</td>
+                                                    @if (q._ingredient.InStoreOrNot)
+                                                    {
+                                                        <td>販售中</td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td>未販售</td>
+
+                                                    }
+                                                    <td>$ @q._ingredient.Price</td>
+                                                    <td>@q._ingredient.IngredientUnit</td>
+                                                    <td><input type="text" class="Qty col-2 text-center" value="@q._shopping.CartQty" disabled /></td>
+                                                    @if (q._ingredient.InStoreOrNot)
+                                                    {
+                                                        <td>
+                                                            <button class="addcart" data-Iid="@q._ingredient.IngredientId">加至購物車</button>
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td>
+                                                            <button disabled="disabled">加至購物車</button>
+                                                        </td>
+                                                    }
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        }
+    </div>
+</section>
+
+@section Scripts{
+
+    <link href="/assets/css/StyleWish.css" rel="stylesheet">
+
+    <script>
+
+        //刪除喜歡的食譜
+        $(document).on("click", ".btn-danger", async function () {
+            var windowshow = confirm("確定刪除嗎?");
+            if (windowshow) {
+                var memberid=@login_id;
+                var wishrecipeid = $(this).parents("label").attr('id');
+                const result= await fetch("/WishList/Delete/?memberid=" + memberid + "&recipeid=" + wishrecipeid);
+                const text = await result.text();
+                if (result.ok) {
+                    console.log(text)
+                    if (text) {
+                        $(this).parents("label").parents("div").remove();
+                        alert("刪除成功");
+                        window.location.reload();
+                    }
+                    else {
+                        alert("刪除失敗");
+                    }
+                }
+                else {
+                    alert("123")
+                    throw new Error(text);
+                }
+            }
+        });
+        const docfrag = $(document.createDocumentFragment())
+        //加到購物車
+        $(document).on("click", ".addcart", function () {
+            var count = Number($(this).parents("tr").find(".Qty").val().toString());
+            $(this).parents("tr").find(".Qty").val(count + 1);
+            $.ajax({
+                url: '/AddingCartAPI/AddtoCart',
+                data: { 'ingid': $(this).attr('data-Iid'), 'qty': 1 }
+            }).done(datas=>{
+                alert('成功加入購物車');
+
+               
+                var count = 0
+                datas.forEach(data => {
+                    count++
+                    console.log("產品編號" + data.ingid + "數量" + data.cartQty)
+                    const lis = $("<li></li>").text("商品:" + data.ingredient + "數量:" + data.cartQty + "價格$" + data.unitprice)
+                    docfrag.append(lis)
+                })
+                $("#dropdownMenuButton1").val("購物清單(" + count + ")")
+                $(".shopcart>ul").html(docfrag)
+            }).fail(error => {
+                alert('無法加入購物車');
+            })
+        })
+        //計算購物品項
+        fetch("/AddingCartAPI/AddToCart/?ingid=0&qty=0").then(response => { return response.json() }).then(response => {
+            var count = 0
+            response.forEach(data => {
+                count++
+                console.log("產品編號" + data.ingid + "數量" + data.cartQty)
+                const lis = $("<li></li>").text("商品:" + data.ingredient + "數量:" + data.cartQty + "價格$" + data.unitprice)
+                docfrag.append(lis)
+
+            })
+            $("#dropdownMenuButton1").val("購物清單(" + count + ")")
+            $(".shopcart>ul").html(docfrag)
+        })
+    </script>
+}
+

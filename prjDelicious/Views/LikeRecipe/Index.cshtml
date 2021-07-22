@@ -1,0 +1,297 @@
+﻿@using Microsoft.AspNetCore.Http
+@using prjDelicious.ViewModel
+@{
+    ViewData["Title"] = "Index";
+    int login_id = Convert.ToInt32(Context.Session.GetString(CDictionary.CURRENT_LOGINED_USERID));
+}
+
+<section class="align-items-center">
+    <div class="container" id="userinfo">
+        <h3>喜歡食譜清單</h3>
+        <div class="text-center">
+            <h1></h1>
+
+        </div>
+        <div style="margin-top:10px;margin-left:450px">
+            <span style="visibility:hidden">依類別搜尋</span>
+            <span style="margin-left:10px;margin-bottom:50px;visibility:hidden"><select id="cateSearch"><option></option></select></span>
+            <span style="margin-left:60px;margin-bottom:50px"><input id="keywordsearch" type="text" placeholder="喜歡的食譜" name="txtSearch" /></span>
+            <span style="margin-left:10px;margin-bottom:50px"><input id="searchbtn" type="button" class="btn btn-outline-secondary" value="查尋" /></span>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-3" id="recipecategoryDiv">
+                    <ul class="list-group"></ul>
+                </div>
+                <div class="col-9" id="likerecipetDiv">
+                    <table class="table table-hover" id="liketable1">
+                        <thead class="table-warning">
+                            <tr>
+                                <th scope="col">食譜類別</th>
+                                <th scope="col">食譜名稱</th>
+                                <th scope="col">食譜簡述</th>
+                                <th scope="col">份數</th>
+                                <th scope="col">製作時間</th>
+                                <th scope="col">食譜照片</th>
+                                <th scope="col">前往食譜</th>
+                                <th scope="col">刪除喜歡的食譜</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+@section Scripts{
+    <script>
+        const ulCategory = document.querySelector('#recipecategoryDiv>ul');
+        const tblikerecipe = document.querySelector('#likerecipetDiv>table>tbody');
+        const selcate = document.querySelector("#cateSearch");
+
+        loadLikeCate(@login_id);
+
+
+        //左側喜歡的食譜分類
+        function loadLikeCate(memberid) {
+            fetch('/LikeRecipe/LikeRecipeCategory?id=' + memberid).then(response => {
+                if (!response.ok) {
+                    throw new Error(response.statusText);
+                }
+                return response.json();
+            }).then(datas => {
+                ulCategory.innerHTML = "";
+
+                if (datas.length == 0) {
+                    alert("您目前沒有任何資料");
+                }
+                else {
+                    //console.log(datas);
+                    const docFrag = document.createDocumentFragment();
+                    //先加入全部料理標籤
+                    const eleLi1 = document.createElement("li");
+                    eleLi1.setAttribute("data-cid", @login_id);
+                    eleLi1.classList.add("list-group-item");
+                    const txtLi1 = document.createTextNode("全部料理");
+                    eleLi1.appendChild(txtLi1);
+
+                    //selector 喜歡的食譜類別選擇
+                    const opta = new Option("全部料理", 0);
+                    opta.setAttribute("id", "全部料理");
+                    selcate.options.add(opta);
+
+                    eleLi1.addEventListener('click', function () {
+                        loadALLlike(this.dataset.cid);
+                        this.parentNode.childNodes.forEach(li => li.classList.remove('list-group-item-warning'));
+                        this.classList.add('list-group-item-warning');
+                        //清除關鍵字的搜尋條件
+                        $("#keywordsearch").val("");
+
+                        //左側喜歡的食譜分類"全部料理"可以跟selector連動
+                        var selcateVal = this.textContent;
+                        document.getElementById(selcateVal).selected = "true";
+                    })
+                    docFrag.appendChild(eleLi1);
+
+                    //在回圈建立剩下的標籤
+                    datas.forEach(ALLlikerecipe => {
+                        const { recipeCategoryId, recipeCategory } = ALLlikerecipe;
+
+                        const eleLi2 = document.createElement("li");
+                        const txtLi2 = document.createTextNode(recipeCategory);
+                        eleLi2.appendChild(txtLi2);
+                        eleLi2.setAttribute("data-cid", recipeCategoryId);//data-cid=1
+                        eleLi2.classList.add("list-group-item");
+
+                        //selector 喜歡的食譜類別選擇
+                        const opt = new Option(ALLlikerecipe.recipeCategory, ALLlikerecipe.recipeCategoryId);
+                        opt.setAttribute("id", recipeCategory);
+                        selcate.options.add(opt);
+
+                        eleLi2.addEventListener('click', function () {
+                            sellikecate(@login_id, this.dataset.cid);//取得使用者點選的喜歡食譜類別id
+                            this.parentNode.childNodes.forEach(li => li.classList.remove('list-group-item-warning'));
+                            this.classList.add('list-group-item-warning');
+                            $("#keywordsearch").val("");
+
+                            //左側喜歡的食譜分類可以跟selector連動
+                            var selcateVal = this.textContent;
+                            document.getElementById(selcateVal).selected = "true";
+                        })
+                        docFrag.appendChild(eleLi2);
+                    })
+                    ulCategory.appendChild(docFrag);
+                    ulCategory.childNodes[0].classList.add('list-group-item-warning');
+                }
+            })
+        }
+
+        loadALLlike(@login_id);
+
+        //selector 喜歡的食譜類別選擇
+        selcate.addEventListener('click', function () {
+            if (selcate.options[selcate.selectedIndex].value == 0) {
+                loadALLlike(@login_id);
+
+                //selector可以跟左側喜歡的食譜分類"全部料理"連動
+                //console.log(selcate.selectedIndex);
+                ulCategory.childNodes.forEach(li => li.classList.remove('list-group-item-warning'));
+                ulCategory.childNodes[selcate.selectedIndex].classList.add('list-group-item-warning');
+            }
+            else {
+                sellikecate(@login_id, selcate.options[selcate.selectedIndex].value);
+
+                //selector可以跟左側喜歡的食譜分類連動
+                //console.log(selcate.selectedIndex);
+                ulCategory.childNodes.forEach(li => li.classList.remove('list-group-item-warning'));
+                ulCategory.childNodes[selcate.selectedIndex].classList.add('list-group-item-warning');
+            }
+            //清除關鍵字的搜尋條件
+            $("#keywordsearch").val("");
+        })
+
+        //所有喜歡的食譜
+        function loadALLlike(memberid) {
+            fetch('/LikeRecipe/LikeRecipe?id=' + memberid).then(response => {
+                if (!response.ok) {
+                    throw new Error(response.statusText);
+                }
+                return response.json();
+            }).then(datas => {
+                tblikerecipe.innerHTML = "";
+                //console.log(datas);
+
+                ReadDatas(datas);//方法
+
+            }).catch(error => console.log(error));
+        }
+
+        //將使用者點選的喜歡食譜類別show在表格上
+        function sellikecate(memberid, cateid) {
+            fetch('/LikeRecipe/selLikeCat?memberid=' + memberid + "&categoryid=" + cateid).then(response => {
+                if (!response.ok) {
+                    throw new Error(response.statusText);
+                }
+                return response.json();
+            }).then(datas => {
+                tblikerecipe.innerHTML = "";
+
+                ReadDatas(datas);//方法
+
+            }).catch(error => console.log(error));
+        }
+
+        //方法
+        function ReadDatas(datas) {
+            const docFrag = document.createDocumentFragment();
+            datas.forEach(sellike => {
+                const { recipeCategory, recipeName, recipeDescription, forHowMany, timeNeed, picture, recipeLikedId, recipeId } = sellike;
+                const cell1 = document.createElement("td");
+                const txt1 = document.createTextNode(recipeCategory);
+                cell1.appendChild(txt1);
+
+                const cell2 = document.createElement("td");
+                const txt2 = document.createTextNode(recipeName);
+                cell2.appendChild(txt2);
+
+                const cell3 = document.createElement("td");
+                const txt3 = document.createTextNode(recipeDescription);
+                cell3.appendChild(txt3);
+
+                const cell4 = document.createElement("td");
+                const txt4 = document.createTextNode(forHowMany);
+                cell4.appendChild(txt4);
+
+                const cell5 = document.createElement("td");
+                const txt5 = document.createTextNode(timeNeed);
+                cell5.appendChild(txt5);
+
+                const cell6 = document.createElement("td");
+                const img6 = document.createElement("img");
+                img6.src = picture;
+                img6.width = 100;
+                img6.height = 100;
+                cell6.appendChild(img6);
+
+                //建立前往食譜的btn
+                const cell7 = document.createElement("td");
+                const celgotorecipe = document.createElement("button");
+                const txt7 = document.createTextNode("查看食譜");
+                celgotorecipe.classList.add("btn");
+                celgotorecipe.classList.add("btn-outline-warning");
+                celgotorecipe.setAttribute("data-id", recipeId);
+                celgotorecipe.classList.add('goto');
+                celgotorecipe.appendChild(txt7);
+                cell7.appendChild(celgotorecipe);
+
+                //建立刪除btn
+                const cell8 = document.createElement("td");
+                const cellDelete = document.createElement("button");
+                cellDelete.classList.add("btn");
+                cellDelete.classList.add("btn-danger");
+                const txtDelete = document.createElement("i");
+                txtDelete.classList.add("fas");
+                txtDelete.classList.add("fa-trash-alt");
+                cellDelete.setAttribute("data-id", recipeLikedId);
+                cellDelete.classList.add('deletetd');
+                cellDelete.appendChild(txtDelete);
+                cell8.appendChild(cellDelete);
+
+                const row = document.createElement("tr");
+                row.setAttribute("id", recipeId);
+                row.appendChild(cell1);
+                row.appendChild(cell2);
+                row.appendChild(cell3);
+                row.appendChild(cell4);
+                row.appendChild(cell5);
+                row.appendChild(cell6);
+                row.appendChild(cell7);
+                row.appendChild(cell8);
+
+                docFrag.appendChild(row);
+            })
+            tblikerecipe.appendChild(docFrag);
+        }
+
+        //使用者點了喜歡的食譜後跳轉那個食譜的頁面
+        $(document).on("click", ".goto", function () {
+            let id = $(this).attr('data-id')
+            rowclick(id)
+            //console.log($(this))
+        });
+        let rowclick = function (id) {
+            window.open('/ForRecipe/Recipe?id=' + id)
+        };
+
+
+        //刪除喜歡的食譜
+        $(document).on("click", ".deletetd", async function () {
+            var alert = confirm("確定刪除嗎?");
+            if (alert) {
+                var likerecipe = $(this).data('id')
+                let res = await fetch("/LikeRecipe/Delete/?likerecipeid=" + likerecipe)
+                let datas = await res.json();
+                if (datas) {
+                    $(this).parents("tr").remove();
+                    loadLikeCate(2);//先寫死 member id = 2
+                    window.location.reload();
+                }
+            }
+        });
+
+        //用關鍵字搜尋
+        $("#searchbtn").click(async function () {
+            tblikerecipe.innerHTML = "";
+            const searchval = $("#keywordsearch").val();
+            //console.log(searchval);
+            let response = await fetch("/LikeRecipe/Search/?memberid=" + @login_id + "&keyword=" + searchval); 
+            let datas = await response.json();
+            //console.log(datas);
+            ReadDatas(datas);
+        });
+
+    </script>
+}

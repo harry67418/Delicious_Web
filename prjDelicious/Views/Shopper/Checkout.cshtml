@@ -1,0 +1,190 @@
+﻿@model List<CCartItemViewModel>
+@using prjDelicious.ViewModel
+
+@{ 
+    var memberid = ViewBag.memberid;
+}
+<section class="py-5">
+    <div class="container px-4 px-lg-5 mt-5 justify-content-center">
+        @*<h1 class="mt-4">購物清單</h1>*@
+
+
+        <div class="card bg-transparent">
+            <div class="card-header bg-transparent text-center">
+                購物清單
+            </div>
+
+
+
+            @{
+                int count = 0;
+                decimal totalprice = 0;
+
+                <table class="table table-striped table-hover text-center">
+                    <thead style="background-color:#F3BA5E">
+                        <tr>
+                            <th>序號</th>
+                            <th>商品名稱</th>
+                            <th>數量</th>
+                            <th>單價</th>
+                            <th>小計</th>
+                            <th>可買量</th>
+                            <th>移除項目</th>
+                            <th hidden>計算</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+
+                        @foreach (var item in Model)
+                        {
+                            count++;
+
+                            <tr class="bg-light">
+                                <td>@count</td>
+                                <td>@item.ingredient</td>
+                                <td>
+                                    <input type="number" class="qtys" style="width:60px" min="1" value="@item.CartQty" data-id="@item.Ingid" max="@item.amountInStore"/>
+                                </td>
+                                <td>@item.unitprice</td>
+                                <td>@(item.unitprice * item.CartQty)</td>
+
+                                @if (@item.amountInStore >= @item.CartQty)
+                                {
+                                    <td >庫存充足</td>
+                                }
+                                else
+                                {
+                                    <td style="color:red;font-weight:600">現貨不足</td>
+                                }
+                                <td><button class="removeitem" id="@item.Ingid"><i class="fas fa-trash-alt"></i></button></td>
+                                <td hidden>   @(totalprice += item.unitprice * item.CartQty)</td>
+                            </tr>
+
+
+
+                        }
+
+
+
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>總計</td>
+                            <td>$ @totalprice</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+            }
+
+        </div>
+
+        @if (Model.Count == 0)
+        {<p>目前沒有商品唷!</p><a class="btn btn-outline-warning" href="/Shopper/Index">繼續購物</a> }
+        else
+        {
+    <div class="justify-content-center align-items-start">
+      
+        <form method="post" enctype="multipart/form-data" style="margin:5px" name="frmorder" id="frmorder">
+            <div class="text-center card-header bg-transparent"><label>訂單資訊</label></div>
+            <div class="card-body col-8 align-items-center">
+                <p><label class="col-2 h5">收件者名稱</label><input type="text" value="@ViewBag.member" name="Reciever"/></p>
+                <p><label class="col-2 h5">聯絡手機</label><input type="text" value="@ViewBag.cellphone" name="PhoneNumber" /></p>
+
+
+                <p>
+                    <label class="form-inline col-2 h5">宅配地址</label>
+                    <select id="county" class="btn btn-light" name="DeliveryCounty">
+                        @foreach (var item in @ViewBag.county)
+                        {
+                            <option value="@item">@item</option>
+                        }
+                    </select>
+                    <select id="district" class="btn btn-light" name="DeliveryDistrict"></select>
+                    <input type="text" class="btn btn-light" placeholder="路名" name="DeliveryAddress" id="DeliveryAddress"/>
+                </p>
+             
+                <p><button type="button" class="btn btn-outline-warning" id="finishbuy"><i class="bi bi-cart-check"></i>確定訂購</button>  &nbsp; &nbsp;<a href="/Shopper/index"><i class="bi bi-box-arrow-in-right"></i>繼續購物</a></p>
+           
+            </div>
+        </form>
+    </div>
+        }
+    </div>
+</section>
+
+
+    @section Scripts{
+
+        <script>
+            $(".removeitem").on('click', function () {
+                const ingid = $(this).attr('id')
+                fetch('/AddingCartAPI/RemovetoCart?ingid=' + ingid).then(response => { /*$(this).closest('tr').remove()*/
+                    window.location.reload()
+                }).catch(error => { error })
+            })
+            $(".qtys").on('change', function () {
+                const ingid = $(this).attr('data-id')
+                const qty = $(this).val()
+                fetch('/AddingCartAPI/ChangetoCart/?ingid=' + ingid + "&qty=" + qty).then(response => { /*$(this).closest('tr').remove()*/
+                    window.location.reload()
+                }).catch(error => { error })
+            })
+            district()
+            $("#county").on('change',district)
+            function district()
+            {
+                const county=$("#county").val()
+
+                fetch("/Shopper/district/?county=" + county).then(response => {
+                    console.log(response)
+                    return response.json()
+                }).then(datas =>
+                {
+                    console.log(datas)
+                    const opts = $(document.createDocumentFragment())
+                    datas.forEach(item=>
+                    {
+                       
+                        const opt = $('<option value='+item+'></option>').text(item)
+                       
+                        opts.append(opt)
+                        
+                    })
+                    console.log(opts)
+                    $("#district").html(opts)
+                })
+
+            }
+            $("#finishbuy").on("click", function ()
+            {
+                var isnull = true
+              
+
+              
+                
+
+                if (isnull)
+                {
+                    var formdata = new FormData(document.frmorder)
+                    fetch('/Shopper/FinishChecking', { method: "post", body: formdata }).then(response => {
+                        return response.text();
+                    }).then(data => {
+                        if (data == "訂購成功,請盡快付款") {
+                            alert(data)
+                            window.location.href = "/OrderDetail/List?memberid=" +@memberid+"&status=待付款"
+                        }
+                        else {
+                            alert(data)
+                        }
+                    })
+                }
+            })
+        </script>
+    }

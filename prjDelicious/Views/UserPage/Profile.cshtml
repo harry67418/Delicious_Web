@@ -1,0 +1,341 @@
+﻿@using Microsoft.AspNetCore.Http
+@using prjDelicious.ViewModel
+@model prjDelicious.ViewModel.CUserPageViewModel
+
+@{
+    ViewData["Title"] = "Profile";
+    var login_id = Context.Session.GetString(CDictionary.CURRENT_LOGINED_USERID);
+    var profile_id = Context.Request.Query["id"];//抓網址參數的方法 
+    var followedsId = Model.followeds.Select(t => t.MemberId).ToList();
+}
+
+@section Style{
+    <link href="/assets/css/userpage.css" rel="stylesheet">
+}
+<section class="align-items-center">
+    <div class="container" id="userinfo">
+        <div class="row">
+            <div class="col-sm-4 d-flex align-items-center justify-content-center">
+                <img class="rounded-circle" id="figure" src="@Model.figureSrc@Model._member.Figure" />
+            </div>
+            <div class="col-sm-5" id="userdata">
+                <h2 id="nickname"><i class="fas fa-user-alt d-inline">@Model._member.Nickname</i></h2>
+                <button type="button" class="shadow-none btn btn-outline-info btn-sm show-followed" data-profileid="@profile_id">
+                <span class="followed-count">
+                    @(Model.followedCount)
+                    </span>位粉絲
+                </button>
+
+                <button type="button" class="shadow-none btn btn-outline-info btn-sm show-follow" data-profileid="@profile_id">
+                    <span class="follow-count">
+                        @(Model.followCount)
+                    </span>追蹤中
+                </button>
+                
+                @{
+                    if (Model._member.MemberId.ToString() == login_id) //如果此個人頁面是登入者
+                    {
+                        <button type="button" class="btn btn-outline-info btn-sm shadow-none" onclick="window.location.href='/UserPage/Setting?id=@login_id'">
+                            <i class="fas fa-cog">編輯個人檔案</i>
+                        </button>
+                    }
+                    if(login_id!=null && Model._member.MemberId.ToString() != login_id)//如果有登入
+                    {
+                        if (followedsId.Contains(Convert.ToInt32(login_id)))
+                        {
+                            //點擊取消追蹤
+                            <button type="button" class="btn btn-outline-success btn-sm shadow-none disfollow" data-loginid="@login_id" data-profileid="@profile_id"><i class="fas fa-user-check">取消追蹤</i></button>
+                        }
+                        else
+                        {
+                            <button type="button" class="btn btn-outline-secondary btn-sm shadow-none addfollow" data-loginid="@login_id" data-profileid="@profile_id"><i class="fas fa-user-plus">加入追蹤</i></button>
+                        }
+                    }
+                }
+                <p id="rankname"><i class="fas fa-award">@Model.rankname</i></p>
+                <p><i class="fas fa-chart-bar">會員積分 : @Model._member.PersonalRankScore</i></p>
+                <p><i class="fas fa-pen">已發表 @Model.my_recipe_count 張食譜</i></p>
+                <p><i class="fas fa-heart">喜歡 @Model.like_recipe_count 張食譜</i></p>
+                <p id="info">@Model._member.Info</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="portfolio" class="portfolio" style="margin:20px 0 20px 0">
+    <div class="container">
+
+        <div class="section-title">
+            <h2>發表過的食譜</h2>
+        </div>
+        @if (Model.my_recipe_count != "0")
+        {
+            <div class="recipe-view" id="recipe">
+                <div class="spinner-border text-primary" role="status" id="loading">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <!--ajax讀取-->
+            </div>
+        }
+        else
+        {
+            <div class="recipe-view" id="recipe">
+                <div>
+                    <h1>尚未發表食譜</h1>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+<!--粉絲modal-->
+<div class="modal fade" tabindex="-1" id="followed-list">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">粉絲</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body followed-modal">
+                <!--ajax加入-->
+            </div>
+        </div>
+    </div>
+</div>
+<!--追蹤者modal-->
+<div class="modal fade" tabindex="-1" id="follow-list">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">追蹤名單</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body follow-modal">
+                <!--ajax加入-->
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+
+        //彈出粉絲視窗
+        $(document).on("click", ".show-followed", function (evt) { //粉絲modal
+            let profileid = $(this).data("profileid");
+            $.ajax({
+                beforeSend: function () {
+                },
+                url: '/UserPage/FollowedModal',
+                type: "POST",
+                data: { "memberID": profileid },
+                success: function (datas) {
+                    let followed_modal = $(".followed-modal");
+                    followed_modal.text("");
+                    datas.forEach(function (data) {
+                        const { memberId, nickname, figure } = data;
+                        const follow_row = $("<div class='row follow-row'></div>")
+                        const follow_col = $("<div class=' follow-col'></div>")
+                        const img = $(`<img src='${figure}' class='rounded-circle'/>`)
+                        const a = $(`<a href="/UserPage/Profile?id=${memberId}">${nickname}</a>`)
+                        follow_col.append(img);
+                        follow_col.append(a);
+                        follow_row.append(follow_col);
+                        followed_modal.append(follow_row);
+                    })
+                },
+                complete: function () {
+
+                },
+                error: function (data) {
+                    alert("失敗")
+
+                }
+            })
+            $("#followed-list").modal("show");
+            $("#followed-list").modal("toggle"); //modal彈出
+        });
+        //彈出追蹤中視窗
+        $(document).on("click", ".show-follow", function (evt) { //追蹤者modal
+            let profileid = $(this).data("profileid");
+            $.ajax({
+                beforeSend: function () {
+                },
+                url: '/UserPage/FollowModal',
+                type: "POST",
+                data: { "memberID": profileid },
+                success: function (datas) {
+                    let follow_modal = $(".follow-modal");
+                    follow_modal.text("");
+                    datas.forEach(function (data) {
+                        const { followMemberId, nickname, figure } = data;
+                        const follow_row = $("<div class='row follow-row'></div>")
+                        const follow_col = $("<div class=' follow-col'></div>")
+                        const img = $(`<img src='${figure}' class='rounded-circle'/>`)
+                        const a = $(`<a href="/UserPage/Profile?id=${followMemberId}">${nickname}</a>`)
+                        follow_col.append(img);
+                        follow_col.append(a);
+                        follow_row.append(follow_col);
+                        follow_modal.append(follow_row);
+                    })
+                },
+                complete: function () {
+
+                },
+                error: function (data) {
+                    alert("失敗")
+
+                }
+            })
+            $("#follow-list").modal("show");
+            $("#follow-list").modal("toggle"); //modal彈出
+        });
+        //追蹤
+        $(document).on("click", ".addfollow", function () {
+            let memberID = $(this).data("loginid")
+            let followMemberID = $(this).data("profileid")
+            let this_button = $(this)
+            $.ajax({
+                beforeSend: function () {
+                    change_to_disfollow(this_button)
+                },
+                url: '/UserPage/AddFollow',
+                type: "POST",
+                data: { "memberID": memberID, "followMemberID": followMemberID },
+                success: function (data) {
+                    if (!data) {
+                        alert("失敗")
+                        change_to_addfollow(this_button)
+                    }
+                },
+                complete: function () {
+
+                },
+                error: function (data) {
+                    alert("失敗")
+                    change_to_addfollow(this_button)
+                }
+            })
+        })
+        //取消追蹤
+        $(document).on("click", ".disfollow", function () {
+            if (confirm("確定要取消追蹤嗎?")) {
+                let memberID = $(this).data("loginid")
+                let followMemberID = $(this).data("profileid")
+                let this_button = $(this)
+                $.ajax({
+                    beforeSend: function () {
+                        change_to_addfollow(this_button)
+                    },
+                    url: '/UserPage/DisFollow',
+                    type: "POST",
+                    data: { "memberID": memberID, "followMemberID": followMemberID },
+                    success: function (data) {
+                        if (!data) {
+                            alert("失敗");
+                            change_to_disfollow(this_button)
+                        }
+                    },
+                    complete: function () {
+
+                    },
+                    error: function (data) {
+                        alert("失敗");
+                        change_to_disfollow(this_button)
+                    }
+                })
+            }
+        })
+
+        function change_to_addfollow(button) {
+            button.attr("class", "btn btn-outline-secondary btn-sm shadow-none addfollow")
+            button.children("i").attr("class", "fas fa-user-plus")
+            button.children("i").text("加入追蹤")
+            $(".followed-count").text(parseInt($(".followed-count").text()) - 1);
+        }
+
+        function change_to_disfollow(button) {
+            button.attr("class", "btn btn-outline-success btn-sm shadow-none disfollow")
+            button.children("i").attr("class", "fas fa-user-check")
+            button.children("i").text("取消追蹤")
+            $(".followed-count").text(parseInt($(".followed-count").text()) + 1);
+        }
+
+        getMemberRecipe(@Model._member.MemberId);
+        function getMemberRecipe(id) {
+        $.ajax({
+            beforeSend: function () {
+                $('#loading').css("display", "");
+            },
+            url: '/UserPage/GetMemberRecipe',
+            type: "POST",
+            data: 'id='+id,
+            success: function (data) {
+                const carousel = $("#recipe")
+                recipehtml(data,carousel)
+            },
+            complete: function () {
+                $('#loading').css("display", "none");
+            },
+            error: function (data) {
+                alert("修改失敗");
+            }
+        })
+    }
+
+        function recipehtml(datas, carousel) {
+            let list = new Array()
+            datas.forEach(function (item) {
+                let { recipeName, recipeId, picture, views, postTime, likeCount, recipeDescription, nickname } = item
+                if (views == undefined) {
+                    views = 0;
+                }
+                if (likeCount == undefined) {
+                    likeCount = 0;
+                }
+                const img = $("<img class='c-img'>")
+                img.attr("src", picture)
+                const pic = $("<div class='c-pic'></div>").append(img);
+
+                const h5 = $("<h5 class='title'></h5>").text(recipeName)//1
+                const title = $("<div class='title-div'></div>").append(h5);
+
+                const p_recipedescription = $("<p class='content'></p>").text(recipeDescription)//2
+
+
+                const sm_nickname = $(`<small><i class='fas fa-user-edit'>${' '+nickname}</i></small>`)
+                const sm_views = $(`<small><i class='fas fa-heart heart'>${' ' + likeCount}</i></small>`)
+                const sm_like = $(`<small><i class='fas <i class="fas fa-eye eye"></i> heart'>${' ' + views}</i></small>`)
+                const sm_posttime = $("<small></small>").text(postTime.substring(0, 10))
+
+                const p_nickname = $("<p  class='info'></p>").append(sm_nickname)//3
+                const p_views = $("<span  class='c-view'></span>").append(sm_views)//4
+                const p_like = $("<span  class='c-like'></span>").append(sm_like)//5
+                const p_posttime = $("<div  class='footer'></div>").append(sm_posttime)//6
+
+                const card_body = $("<div class='c-body'></div>").append([title, p_recipedescription, p_nickname, p_views, p_like, p_posttime]) //card_body
+
+                const card = $("<div class='c'></div>").append([pic, card_body])
+                card.attr("data-id", recipeId)
+                list.push(card)
+                card.on("click", function () {
+                    window.location.href = `/forrecipe/recipe?id=${$(this).data("id")}`
+                })
+            })
+            list.forEach(function (card) {
+                carousel.append(card)
+            })
+            settext();
+        }
+
+            function settext() {
+                var len = 20; // 超過50個字以"..."取代
+                $(".content").each(function (i) {
+                    if ($(this).text().length > len) {
+                        $(this).attr("title", $(this).text());
+                        var text = $(this).text().substring(0, len - 1) + "...";
+                        $(this).text(text);
+                    }
+                });
+            };
+    </script>
+}

@@ -1,0 +1,153 @@
+﻿
+@{
+    ViewData["Title"] = "食材商品";
+}
+
+
+
+
+<form style="margin:5px" name="conditions" id="conditions">
+    <capital style="font-weight:700">搜尋條件</capital>
+
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <select id="SelIngCat" class="btn btn-light" name="SelIngCat">
+                <option value=0>全部種類</option>
+                @{
+                    foreach (var item in Model.CatIdList)
+                    {
+                        <option value=@item.IngredientCategoryId>@item.IngredientCategory</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="input-group-prepend">
+            <span class="input-group-text">關鍵字搜尋</span>
+        </div>
+        <input type="text" aria-label="SelKeywords" name="SelKeywords" class="form-control col-2" placeholder="食材關鍵字">
+
+        <div class="input-group-prepend">
+            <span class="input-group-text">售價搜尋</span>
+        </div>
+        <input type="text" aria-label="SelMin" name="SelMin" class="form-control col-1" placeholder="最低價">
+        <input type="text" aria-label="SelMax" name="SelMax" class="form-control col-1" placeholder="最高價">
+        <div class="input-group-prepend">
+            <select id="SelSale" class="btn btn-light" name="SelSale">
+                <option value=2>販售狀況</option>
+                <option value=1>販售中</option>
+                <option value=0 selected>未販售</option>
+            </select>
+        </div>
+
+    </div>
+</form>
+<div style="float:right">
+    <button id="buttonAdd" class="btn btn-primary mb-3" data-target="#staticBackdrop" style="margin-left:15px;background-color:transparent">
+        <a href="/Ingredient/Create"><i class="fas fa-plus"></i></a>
+    </button>
+</div>
+
+<div>
+    <table class="table table-hover" style="text-align:center" id="datatablesSimple">
+        <thead>
+            <tr>
+                <th hidden>食材編號</th>
+                <th>食材序號</th>
+                <th>食材名稱</th>
+                <th>食材種類</th>
+                <th>食材單位</th>
+                <th>食材售價</th>
+                <th>食材庫存</th>
+                <th>商品描述</th>
+                <th>是否販售</th>
+                <th>編輯</th>
+                <th>刪除</th>
+
+            </tr>
+
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+@section Scripts{
+    <script>
+        const docfrag = $(document.createDocumentFragment())
+
+        $('#conditions').on('change', $('input'), function () { search() })
+        search()
+
+        async function search() {
+            const formconditions = new FormData(document.conditions)
+            var response = await fetch('/Ingredient/conditions', { method: 'post', body: formconditions })
+            var data = await response.json()
+            var count = 0
+            console.log(data)
+            data.forEach(items => {
+                count = count + 1
+                var sales
+                if (items.inStoreOrNot) { sales = '販售中' }
+                else { sales = '未販售' }
+                const tID0 = $('<td hidden></td>').text(items.ingredientId)
+                const tID1 = $('<td></td>').text(count)
+               
+                    const tID2 = $('<td></td>').html(items.ingredient + '<a href="https://deliciousnet.azurewebsites.net/Shopper/MerchadiseDetail/?Ingid=' + items.ingredientId+'"><i class="fas fa-arrow-circle-right"></i></a>')
+             
+                   // const tID2 = $('<td></td>').text(items.ingredient)
+                
+
+                const tID3 = $('<td></td>').text(items.ingredientCategory)
+                const tID4 = $('<td></td>').text(items.ingredientUnit)
+                const tID5 = $('<td></td>').text(items.price)
+                const tID6 = $('<td></td>').text(items.amountInStore)
+                const tID7 = $('<td></td>').text(items.merchandiseDescription)
+                const tID8 = $('<td></td>').text(sales)
+                const tID9 = $('<td></td>').html('<button  class="btn btn-secondary mr-3 tdedit" id='+ items.ingredientId +'><i class="fas fa-pen-nib"></i></button>')
+               // const tID9 = $('<td class="tdedit"></td>').html()
+                const tID10 = $('<td></td>').html('<button class="btn btn-danger tddelete" id=' + items.ingredientId +'><i class="fas fa-trash-alt"></i></button>')
+                const row = $('<tr></tr>').append([tID0], [tID1], [tID2], [tID3], [tID4], [tID5], [tID6], [tID7], [tID8], [tID9], [tID10])
+                docfrag.append(row)
+            })
+
+
+            console.log(data)
+            $('#datatablesSimple>tbody').html(docfrag)
+        }
+       // search()
+
+
+        $('#datatablesSimple>tbody').on('click', '.tddelete', function () {
+
+            const IngId = Number($(this).prop('id'))
+            var alert1 = confirm('確定要刪除嗎?')
+            if (alert1) {
+                fetch('/Ingredient/delete?IngID=' + IngId, { method: 'Get' }).then(response => {
+
+                    if (response.ok) {//需要修改
+                        console.log('來刪除')
+                        $(this).closest('tr').remove()
+                    }
+                    else {
+                        alert('已被使用無法刪除')
+                    }
+                })
+            }
+        })
+        $('#datatablesSimple>tbody').on('click', '.tdedit', function () {
+
+
+            IngId = Number($(this).prop('id'))
+
+            window.location.href = '@Url.Action("Edit","Ingredient")' + "?IngId=" + IngId
+
+
+        /*  $(this).prop('href', 'www.yahoo.com.tw')*/
+
+        })
+
+
+    </script>
+
+
+
+}

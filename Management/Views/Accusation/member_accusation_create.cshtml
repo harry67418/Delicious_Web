@@ -1,0 +1,92 @@
+﻿@model Management.Models.Taccusation
+
+@{
+    ViewData["Title"] = "accusation_create";
+}
+
+<h1>管理員手動舉報畫面</h1>
+ 
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="member_accusation_create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="MemberId" class="control-label">使用者ID</label>
+                <input asp-for="MemberId" class="form-control" asp-items="ViewBag.MemberId" />
+            </div>
+            <div class="form-group">
+                <label asp-for="AccuseId" class="control-label">舉報項目</label>
+                <select id="AccuseId" asp-for="AccuseId" class="form-control" asp-items="ViewBag.AccuseId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="AccusedAvatar" class="control-label">舉報區域</label>
+                <select asp-for="AccusedAvatar" class="form-control" id="AccusedAvatar" ></select>
+                <span asp-validation-for="AccusedAvatar" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AccusedId" class="control-label">舉報封鎖標的</label>
+                <input asp-for="AccusedId" class="form-control" />
+                <span asp-validation-for="AccusedId" class="text-danger"></span>
+                <input type="button" value="尋找" class="btn btn-primary" id="search_recipe"/>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="送出" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">返回</a>
+</div>
+
+@section Scripts {
+    <script>
+    const AccuseId = document.querySelector('#AccuseId')
+    const xhr = new XMLHttpRequest();
+        xhr.addEventListener('load', function () {
+            if (xhr.status == 200) {
+                const datas = JSON.parse(xhr.responseText)
+                //console.log(this.responseText);
+                //步驟4
+                var option = document.createElement("option");
+                option.text = "請選擇";
+                AccuseId.options.add(option)
+                datas.forEach((item) => {
+                    const accusation = item.accusation
+                    //步驟5顯示資料
+                    const opt = new Option(accusation, accusation)
+                    AccuseId.options.add(opt)
+                })
+            }
+            else {
+                console.log(xhr.status)
+            }
+        })
+        xhr.open('GET', '@Url.Action("AccusationList", "api")')
+        xhr.send();
+
+        const AccusedAvatar = document.querySelector('#AccusedAvatar');
+        var option = document.createElement("option");
+        var option1 = document.createElement("option");
+        option.text = "討論區";
+        option1.text = "食譜";        
+        AccusedAvatar.options.add(option);
+        AccusedAvatar.options.add(option1);
+
+        const search_recipe_btn = document.querySelector('#search_recipe');
+        search_recipe_btn.addEventListener("click", function () {
+            const AccusedAvatar = document.querySelector('#AccusedAvatar');
+            
+            var m_index = AccusedAvatar.selectedIndex;
+            if (AccusedAvatar.options[m_index].text == "食譜") {
+                window.open(location.protocol + '/Accusation/search_recipe', '尋找食譜', config = 'height=400px,width=400px, alwaysRaised', this.focus);
+            }
+            else if (AccusedAvatar.options[m_index].text == "討論區") {
+                window.open(location.protocol + '/Accusation/search_comment', '尋找討論區', config = 'height=400px,width=400px, alwaysRaised', this.focus);
+            }
+            });
+    </script>
+
+}

@@ -1,0 +1,84 @@
+﻿@model Management.ViewModel.CShowingPicViewModel
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h3>編輯輪播牆</h3>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="ShowingPicsId" />
+            <div class="form-group">
+                <label asp-for="ShowingPicsTitle" class="control-label"></label>
+                <input asp-for="ShowingPicsTitle" class="form-control" />
+                <span asp-validation-for="ShowingPicsTitle" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ShowingPicsPathRoad" class="control-label"></label>
+                <input asp-for="ShowingPicsPathRoad" class="form-control" />
+                <span asp-validation-for="ShowingPicsPathRoad" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ShowingPicsDescription" class="control-label"></label>
+                <input asp-for="ShowingPicsDescription" class="form-control" />
+                <span asp-validation-for="ShowingPicsDescription" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ShowingPicsDescription" class="control-label"></label>
+                <input asp-for="ShowingPicsHyperLink" class="form-control" />
+                <span asp-validation-for="ShowingPicsHyperLink" class="text-danger"></span>
+            </div>
+
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    @{ if (Model.counttrue >= 5 && !Model.ShowingPicsIsShowOrNot)
+                        { <input type="checkbox" class="form-check-input" name="ShowingPicsIsShowOrNot" id="ShowingPicsIsShowOrNot" value="" disabled /> @Html.DisplayNameFor(model => model.ShowingPicsIsShowOrNot)
+                        <p class="small">已選取5張圖片,請先取消其他圖片,再來選取</p>}
+                    else if (Model.ShowingPicsIsShowOrNot)
+                    { <input type="checkbox" class="form-check-input" name="ShowingPicsIsShowOrNot" id="ShowingPicsIsShowOrNot" checked="checked" /> @Html.DisplayNameFor(model => model.ShowingPicsIsShowOrNot)}
+                     else
+                      { <input class="form-check-input" asp-for="ShowingPicsIsShowOrNot" /> @Html.DisplayNameFor(model => model.ShowingPicsIsShowOrNot)}
+
+                    }
+                </label>
+            </div>
+
+            <div class="form-group">
+                <label class="form-check-label">
+                    <input type="file" name="uploadpic" id="uploadpic" value="檔案上傳" />
+                </label>
+            </div>
+            <div class="form-group">
+                <img id="ShowPic" name="ShowPic" style="width:300px;height:200px" src="~/img/ShowingPic/@Model.ShowingPicsPathRoad" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    <script>
+        const upload = document.querySelector('#uploadpic')
+        const ShowPic = document.querySelector('#ShowPic')
+        const checktrue = document.querySelector('#ShowingPicsIsShowOrNot')
+
+        upload.onchange = function (e) {
+            if (upload.files && upload.files[0]) {
+                ShowPic.src = URL.createObjectURL(upload.files[0])
+            }
+        }
+
+
+
+
+    </script>
+}

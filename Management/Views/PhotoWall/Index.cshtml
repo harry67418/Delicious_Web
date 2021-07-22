@@ -1,0 +1,145 @@
+﻿@model Management.ViewModel.CPhotoWallViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+<div class="h3 bgmainbar text-center">美食牆會員投稿</div>
+
+<div class="text-center"><button id="categoryrank" class="bgbtn" style="margin:3px">@Html.ActionLink("清單排序", "Index")</button><button id="timerank" class="bgbtn" style="margin:3px">@Html.ActionLink("圖片排序", "listbycategory")</button></div>
+<p class="card-header text-center bg-transparent"> 
+    <input type="button" class="category btn btn-outline-info h3" style="margin:3px" value="全部種類" />
+    @foreach (var item in Model.list)
+    {
+        <input type="button" value="@item.Category" class="category btn btn-outline-info h3" style="margin:3px" /><label>已選取</label><input type="text" id="@item.CategoryId" value="@item.CounttheSame" style="width:30px ;margin:3px" class="bg-transparent border-light text-center" disabled/>
+    }
+</p>
+@*<input type="text" class="light-table-filter"  />*@
+<table class="table h3 text-center order-table" id="detailtb">
+    <thead>
+        <tr>
+            <th>
+                是否秀出
+            </th>
+            <th>
+                圖片
+            </th>
+            <th>
+                投稿時間
+            </th>
+
+            <th>
+                圖片分類
+            </th>
+            <th>
+                會員名稱
+            </th>
+
+        </tr>
+    </thead>
+   <tbody id="tbody1"></tbody>
+</table>
+@section Scripts
+{
+
+    <script>
+        loaddatas("全部種類")
+        async function loaddatas(keywords) {
+           // console.log(keywords)
+            const response = await fetch('/PhotoWall/list/?keywords=' + keywords)
+            const datas = await response.json()
+            document.getElementById("tbody1").innerHTML=""
+            datas.list.forEach(
+                item => {
+                    const docFrag = document.createDocumentFragment()
+                    const { memberId, pictureId, picture, display, categoryId, memberAccountName, category, contributeTime, counttheSame } = item
+                      
+                    const tr0 = document.createElement('tr')
+                   
+
+                    const td1 = document.createElement('td')
+                    const checkbox1 = document.createElement('input')
+                    checkbox1.setAttribute('type', 'checkbox')
+                    checkbox1.setAttribute('picid', pictureId)
+                    checkbox1.setAttribute('cateid', categoryId)
+                    checkbox1.setAttribute('style', 'width:20px;height:20px')
+                    checkbox1.classList.add('status')
+                    if (display) {
+                        checkbox1.setAttribute('checked', 'checked')
+                        checkbox1.classList.add('selected')
+                    }
+                    td1.appendChild(checkbox1)
+
+                    const td2 = document.createElement('td')
+                    const img2 = document.createElement('img')
+                    img2.setAttribute('src', 'https://deliciousnet.azurewebsites.net/assets/img/wall/' + picture)
+                    img2.setAttribute('alt', "pictureID=" + pictureId)
+                    img2.setAttribute('width', '300')
+                    img2.setAttribute('height', '200')
+                    //img2.setAttribute('style', 'radius:50%')
+                    td2.appendChild(img2)
+                    
+
+                    const td3 = document.createElement('td')
+                    const txt3 = document.createTextNode(contributeTime)
+                    td3.appendChild(txt3)
+
+                    const td4 = document.createElement('td')
+                    const txt4 = document.createTextNode(category)
+                    td4.appendChild(txt4)
+
+                    const td5 = document.createElement('td')
+                    const txt5 = document.createTextNode(memberAccountName)
+                    td5.appendChild(txt5)
+
+                    tr0.appendChild(td1)
+                    tr0.appendChild(td2)
+                    tr0.appendChild(td3)
+                    tr0.appendChild(td4)
+                    tr0.appendChild(td5)
+
+                    docFrag.appendChild(tr0)
+                   // console.log(tr0)
+                    document.getElementById("tbody1").appendChild(docFrag)
+
+                })
+
+        }
+
+
+
+        $(".table>tbody").on('change', '.status', function () {
+            // const cateid = $(this).attr('cateid')
+            var count = Number(($("#" + $(this).attr('cateid')).val()).toString())
+            if (count >= 12 && !$(this).hasClass('selected'))
+            {
+                alert('同種類已選取12項,請先取消同類項目')
+            }
+            else
+            { 
+                const id = $(this).attr('picid')
+                $(this).toggleClass('selected')
+                if ($(this).hasClass('selected')) {
+                    $("#" + $(this).attr('cateid')).val(count + 1)
+                }
+                else
+                {
+                    $("#" + $(this).attr('cateid')).val(count - 1)
+                }
+                fetch('/PhotoWall/savestatus/?picid=' + id).catch(error => error)
+            }
+        })
+
+        $("body").on('click', ".category", function () {
+
+            $('.light-table-filter').val($(this).val())
+            loaddatas($(this).val())
+            
+        })
+
+
+
+    </script>
+
+}

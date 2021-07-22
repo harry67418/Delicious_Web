@@ -1,0 +1,303 @@
+﻿@{
+    ViewData["Title"] = "HashTag管理";
+}
+<div class="h3 bgmainbar text-center">HashTag管理</div>
+<h3 class="text-center"  margin:40px;" id="h3ST1">尚未選定HashTag</h3>
+<div class="text-center" style="display:flex; margin:40px;">
+    <div id="divAT" style="margin:40px;">
+        <h3>HashTag總表</h3>
+        <input type="text" id="txtAT" />
+        <table id="tblAT" class="table">
+            <thead>
+                <tr>
+                    <th  style="min-width:300px;">HashTag名稱</th>
+                    <th>@*<a id="btnCtxtAT" class="btn btn-primary mr-3"><i class="fas fa-undo"></i></a>*@<a id="btnCT" class="btn btn-primary mr-3"><i class="fas fa-plus"></i></a></th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <div id="divAR" style="margin:40px;">
+        <h3 id="h3ST">食譜總表</h3>
+        <input type="text" id="txtAR" />
+        <table id="tblAR" class="table">
+            <thead>
+                <tr>
+                    <th style="min-width:500px;">食譜名稱</th>
+                    <th>@*<a  id="btnCtxtAR" class="btn btn-primary mr-3"><i class="fas fa-undo"></i></a>*@<a id="btnNST" class="btn btn-primary mr-3"><i class="fas fa-undo"></i></a></th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+@section Scripts{
+    <script>
+
+        let dataAT
+        let dataAR
+        let ST = false
+        let STid = 0
+        let ETid = 0
+        let OK = false
+
+        const fragAT = $(document.createDocumentFragment())
+        const fragAR = $(document.createDocumentFragment())
+
+        $('#txtAT').on('change', $('input'), function () { schAT() })
+        $('#txtAR').on('change', $('input'), function () { schAR() })
+
+        schAT()
+        schAR()
+
+        $("#btnCT").click(function () {
+            let ctname = $('#txtAT').val()
+            if ((ctname != null) && (ctname != '')) {
+                CT()
+            }
+            else {
+                alert('名稱不可空白')
+            }
+        })
+        
+        async function CT() {
+            let response = await fetch('/HashTag/CreateTag?tagName=' + $('#txtAT').val())
+            let data = await response.json()
+            if (data == 'repeat') {
+                alert('名稱不可重複')
+            }
+            else {
+                dataAT = data
+                schAT()
+            }
+            
+        }
+        async function DT(tid) {
+            let response = await fetch('/HashTag/DeleteTag?tagId=' + tid)
+            dataAT = await response.json()
+            schAT()
+        }
+        async function ET(tid, tname) {
+            let response = await fetch('/HashTag/EditTag?tagId=' + tid + '&tagName=' + tname)
+            let data = await response.json()
+            if (data == 'repeat') {
+                alert('名稱不可重複')
+            }
+            else {
+                dataAT = data
+                schAT()
+            }
+        }
+
+        async function schAT() {
+            let response = await fetch('/HashTag/schAT?txt=' + $('#txtAT').val())
+            dataAT = await response.json()
+            dataAT.forEach(d => {
+                const btnedt = '<a class="btn btn-secondary mr-3 edtAT" ATid="' + d.hashtagId + '" ATname="' + d.hasgtag + '"><i class="fas fa-pen-nib"></i></a>'
+                const btndel = '<a class="btn btn-danger mr-3 delAT" ATid="' + d.hashtagId + '"><i class="fas fa-trash-alt"></i></a>'
+                const name = $('<td ATid="' + d.hashtagId + '" ATname="' + d.hasgtag + '" class="rowAT"></td>').text(d.hasgtag)
+                const btn = $('<td>' + btnedt + btndel + '</td>')
+                const row = $('<tr></tr>').append(name, btn)
+                fragAT.append(row)
+            })
+            $('#tblAT>tbody').html(fragAT)
+            $(".rowAT").click(function () {
+                ST = true
+                STid = $(this).attr('ATid')
+                STname = $(this).attr('ATname')
+                $('#h3ST').text('#' + STname + '食譜表')
+                $('#h3ST1').text('目前選定#' + STname)
+                schAR()
+            })
+            $(".edtAT").click(function () {
+                let tid = $(this).attr('ATid')
+                let tname = $(this).attr('ATname')
+                let ntname = prompt('請輸入修改名稱', tname);
+                if ((ntname != null) && (ntname != '')) {
+                    ET(tid, ntname).then(function () {
+                        if (tid == STid) {
+                            $('#h3ST1').text('目前選定#' + ntname)
+                            if (ST) {
+                                $('#h3ST').text('#' + ntname + '食譜表')
+                            }
+                        }
+                        schAR()
+                    })
+                }
+                else {
+                    alert('名稱不可空白')
+                }
+            })
+            $(".delAT").click(function () {
+                let tid = $(this).attr('ATid')
+                DT(tid).then(function () {
+                    ST = false
+                    STid = 0
+                    STname = ''
+                    $('#h3ST').text('食譜總表')
+                    $('#h3ST1').text('尚未選定HashTag')
+                    $('#txtAR').val('')
+                    schAR()
+                })
+            })
+        }
+        $("#btnNST").click(function () {
+            if (ST) {
+                ST = false
+                $('#h3ST').text('食譜總表')
+                schAR()
+            }
+            else {
+                ST = true
+                $('#h3ST').text('#' + STname + '食譜表')
+                schAR()
+            }
+        })
+        async function schAR() {
+            let response
+            if (ST) {
+                response = await fetch('/HashTag/schTR?id=' + STid + '&txt=' + $('#txtAR').val())
+            }
+            else {
+                response = await fetch('/HashTag/schAR?id=' + STid + '&txt=' + $('#txtAR').val())
+            }
+            dataAR = await response.json()
+            dataAR.forEach(d => {
+                if (STid == 0) {
+                    const name = $('<td ARid="' + d.recipeId + '" class="rowAR"></td>').text(d.recipeName)
+                    const row = $('<tr></tr>').append(name)
+                    fragAR.append(row)
+                }
+                else {
+                    if (d.tagFlag > 0) {
+                        const btndtl = '<a class="btn btn-primary mr-3 dtlAR" ARid="' + d.recipeId + '"><i class="fas fa-file-alt"></i></a>'
+                        const btndelt = '<a class="btn btn-danger mr-3 delT" ARid="' + d.recipeId + '"><i class="fas fa-minus"></i></a>'
+                        const name = $('<td ARid="' + d.recipeId + '" class="rowAR"></td>').text(d.recipeName)
+                        const btn = $('<td>' + btndelt + '</td>')
+                        const row = $('<tr></tr>').append(name, btn)
+                        fragAR.append(row)
+                    }
+                    if (d.tagFlag == 0) {
+                        const btndtl = '<a class="btn btn-primary mr-3 dtlAR" ARid="' + d.recipeId + '"><i class="fas fa-file-alt"></i></a>'
+                        const btnaddt = '<a class="btn btn-primary mr-3 addT" ARid="' + d.recipeId + '"><i class="fas fa-plus"></i></a>'
+                        const name = $('<td ARid="' + d.recipeId + '" class="rowAR"></td>').text(d.recipeName)
+                        const btn = $('<td>' + btnaddt + '</td>')
+                        const row = $('<tr></tr>').append(name, btn)
+                        fragAR.append(row)
+                    }
+                }
+            })
+            $('#tblAR>tbody').html(fragAR)
+            $(".delT").click(function () {
+                let rid = $(this).attr('ARid')
+                DRT(rid)
+            })
+            $(".addT").click(function () {
+                let rid = $(this).attr('ARid')
+                ART(rid)
+            })
+        }
+        async function DRT(rid) {
+            let response = await fetch('/HashTag/DeleteRecipeTag?rid=' + rid + '&tid=' + STid)
+            OK = await response.json()
+            schAR()
+        }
+        async function ART(rid) {
+            let response = await fetch('/HashTag/AddRecipeTag?rid=' + rid + '&tid=' + STid)
+            OK = await response.json()
+            schAR()
+        }
+    </script>
+
+}
+
+@*@model IEnumerable<Management.ViewModel.CHashTagViewModel>
+
+    @{
+        ViewData["Title"] = "HashTag列表";
+    }
+
+    <div class="h3 bgmainbar text-center">HashTag列表</div>
+
+    <form method="post">
+        <p>
+            關鍵字<input id="txtsearch" type="text" /><input id="btnsearch" type="button" value="查詢" />
+        </p>
+    </form>
+    <p>
+        <a asp-action="Create" class="btn btn-primary mr-3"><i class="fas fa-plus"></i></a>
+    </p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.HashtagId)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Hashtag)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.TagRecipes)
+                </th>
+                <th>
+                    編輯
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+
+            {
+                if (true)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.HashtagId)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Hashtag)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TagRecipes)
+                        </td>
+                        <td>
+                            <a class="btn btn-secondary mr-3 tdedit" asp-action="Edit" asp-route-id="@item.HashtagId"><i class="fas fa-pen-nib"></i></a>
+                            <a class="btn btn-danger tddelete" asp-action="Delete" asp-route-id="@item.HashtagId"><i class="fas fa-trash-alt"></i></a>
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.HashtagId)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Hashtag)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TagRecipes)
+                        </td>
+                        <td>
+                            <a class="btn btn-secondary mr-3 tdedit" asp-action="Edit" asp-route-id="@item.HashtagId"><i class="fas fa-pen-nib"></i></a>
+                        </td>
+                    </tr>
+                }
+
+            }
+        </tbody>
+    </table>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            $("#btnsearch").click(function () {
+                let kw = $("#txtsearch").val()
+                btnsearchclick(kw)
+            })
+        });
+
+        let btnsearchclick = function (kw) {
+            window.open('/HashTag/Index?txtSearch=' + kw)
+        }
+    </script>*@

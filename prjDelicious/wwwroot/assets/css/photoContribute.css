@@ -1,0 +1,42 @@
+﻿.avatar-zone {
+    width: 1280px;
+    height: 800px;
+    background-color: #CCCCCC;
+    text-align: center;
+    line-height: 160px;
+}
+
+.overlay-layer {
+    width: 1280px;
+    height: 40px;
+    position: absolute;
+    margin-top: -40px;
+    opacity: 0.5;
+    background-color: #000000;
+    z-index: 0;
+    font-size: 25px;
+    color: #FFFFFF;
+    text-align: center;
+    line-height: 40px;
+}
+
+.upload_btn {
+    position: absolute;
+    width: 1280px;
+    height: 800px;
+    margin-top: -800px;
+    z-index: 10;
+    opacity: 0;
+}
+#comimg {
+    max-width: 200px;
+    max-height: 200px;
+}
+#edit-comimg {
+    max-width: 200px;
+    max-height: 200px;
+}
+#pic {
+    max-width:1280px;
+    max-height:800px;
+}

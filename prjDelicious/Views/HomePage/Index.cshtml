@@ -1,0 +1,306 @@
+﻿@model prjDelicious.ViewModel.CHomePageViewModel
+@{
+    ViewData["Title"] = "Index";
+}
+
+<!-- ======= 輪播牆 ======= -->
+<section id="hero">
+    <div id="heroCarousel" data-bs-interval="5000" class="carousel slide carousel-fade" data-bs-ride="carousel">
+
+        <ol class="carousel-indicators" id="hero-carousel-indicators"></ol>
+
+        <div class="carousel-inner" role="listbox">
+            @{
+                int count = 0;
+                foreach (var item in Model.showpics)
+                {
+                    count++;
+                    if (count == 1)
+                    {
+                        <div class='carousel-item active' style='background-image: url(@(Model.ShowPicsSrc + item.ShowingPicsPathRoad))'>
+                            <div class="carousel-container">
+                                <div class="container">
+                                    <h2 class="animate__animated animate__fadeInDown">@item.ShowingPicsTitle</h2>
+                                    <p class="animate__animated animate__fadeInUp">@item.ShowingPicsDescription</p>
+                                    <a href="@item.ShowingPicsHyperLink" class="btn-get-started animate__animated animate__fadeInUp scrollto">Read More</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    else
+                    {
+                        <div class='carousel-item' style='background-image: url(@(Model.ShowPicsSrc + item.ShowingPicsPathRoad))'>
+                            <div class="carousel-container">
+                                <div class="container">
+                                    <h2 class="animate__animated animate__fadeInDown">@item.ShowingPicsTitle</h2>
+                                    <p class="animate__animated animate__fadeInUp">@item.ShowingPicsDescription</p>
+                                    <a href="@item.ShowingPicsHyperLink" class="btn-get-started animate__animated animate__fadeInUp scrollto">Read More</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                }
+            }
+        </div>
+
+        <a class="carousel-control-prev" href="#heroCarousel" role="button" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon bi bi-chevron-left" aria-hidden="true"></span>
+        </a>
+
+        <a class="carousel-control-next" href="#heroCarousel" role="button" data-bs-slide="next">
+            <span class="carousel-control-next-icon bi bi-chevron-right" aria-hidden="true"></span>
+        </a>
+
+    </div>
+</section>
+
+<main id="main">
+    <!-- ======= 熱門食譜 =========== -->
+    <section id="portfolio" class="portfolio">
+        <div class="container">
+
+            <div class="section-title">
+                <h2>本季熱門食譜</h2>
+                <p>當季最強食譜都在這裡!</p>
+            </div>
+
+            <div class="recipe-view" id="hotrecipe">
+                <div class="spinner-border text-primary" role="status" id="loading1">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- ======= 分類食譜 ======= -->
+    <section id="portfolio" class="portfolio">
+        <div class="container">
+
+            <div class="section-title">
+                <h2>分類食譜</h2>
+                <p>想要什麼?通通有!</p>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12 d-flex justify-content-center">
+                    <ul id="portfolio-flters">
+                        <!--ajax載入-->
+                    </ul>
+                </div>
+            </div>
+
+            <div class="recipe-view" id="recipe">
+                <div class="spinner-border text-primary" role="status" id="loading2">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <!--ajax讀取-->
+            </div>
+        </div>
+</section>
+    <!-- =======美食牆 ======= -->
+    <section id="portfolio" class="portfolio">
+        <div class="container">
+
+            <div class="section-title">
+                <h2>美食牆</h2>
+                <p>食物也能拍得很藝術!</p>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12 d-flex justify-content-center">
+                    <ul id="portfolio-flters">
+                        <li data-filter="*" class="filter-active">All</li>
+                        <li data-filter=".filter-taiwan">台式料理</li>
+                        <li data-filter=".filter-other">異國料理</li>
+                        <li data-filter=".filter-creativity">創意料理</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="row portfolio-container">
+                @foreach (var item in Model.photowalls)
+                {
+
+                    <div class="col-lg-4 col-md-6 portfolio-item @item.HtmlClassName">
+                        <div class="portfolio-wrap">
+                            <img src="@(Model.PhotoWallSrc + item.Picture)" class="img-fluid" alt="">
+                            <span>@item.NickName</span>
+                        </div>
+                    </div>
+                }
+
+            </div>
+
+        </div>
+    </section>
+    <!-- ======= 瘋廚神 ======= -->
+    <section id="team" class="team section-bg">
+        <div class="container">
+
+            <div class="section-title">
+                <h2>瘋廚神</h2>
+                <p>煮菜就是我的人生</p>
+            </div>
+
+            <div class="row">
+                @foreach (var item in Model.members)
+                {
+                    <div class="col-lg-4 col-md-6 d-flex align-items-stretch">
+                        <div class="member">
+                            <img src="@Model.FigureSrc@item.Figure" alt="">
+                            <h4>@item.Nickname</h4>
+                            <span>會員積分 @item.PersonalRankScore</span>
+                            <p>
+                                @item.Info
+                            </p>
+                            <div class="social">
+                                <a href=""><i class="bi bi-twitter"></i></a>
+                                <a href=""><i class="bi bi-facebook"></i></a>
+                                <a href=""><i class="bi bi-instagram"></i></a>
+                                <a href=""><i class="bi bi-linkedin"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+        </div>
+    </section>
+
+</main>
+@section Scripts{
+    <script>
+        getRecipeCategory();
+        getHotRecipe();
+        getRecipe(1);
+        //食譜分類標籤api
+        async function getRecipeCategory() {
+            const ul = $("#portfolio-flters")
+            const frag = document.createDocumentFragment();
+            let response = await fetch('/HomePage/GetRecipeCategory')
+            let datas = await response.json()
+            datas.forEach(function (item) {
+                const { recipeCategoryId, recipeCategory } = item
+                const li = document.createElement("li")
+                li.innerText = recipeCategory
+                if (recipeCategoryId == 1) {
+                    li.setAttribute("data-filter", "*")
+                    li.setAttribute("data-id", recipeCategoryId)
+                    li.classList.add("filter-active")
+                }
+                else {
+                    li.setAttribute("data-filter", ".filter-web")
+                    li.setAttribute("data-id", recipeCategoryId)
+                }
+                li.addEventListener('click', function () {
+                    $(this).parent("ul").find("li").removeClass("filter-active")
+                    $(this).addClass("filter-active")
+                    document.getElementById("recipe").innerHTML = ""
+                    getRecipe(this.getAttribute("data-id"))
+                })
+                frag.append(li)
+            })
+            ul.append(frag)
+        }
+        //熱門食譜api
+        function getHotRecipe() {
+            $.ajax({
+                beforeSend: function () {
+                    $('#loading1').css("display", "");
+                },
+                url: '/HomePage/GetHotRecipe',
+                method: "GET",
+                success: function (data) {
+                    const carousel = $("#hotrecipe")
+                    recipehtml(data, carousel)
+                },
+                complete: function () {
+                    $('#loading1').css("display", "none");
+                },
+                error: function (data) {
+                    alert("修改失敗");
+                }
+            })
+        }
+        //分類食譜api
+        function getRecipe(id) {
+            $.ajax({
+                beforeSend: function () {
+                    $('#loading2').css("display", "");
+                },
+                url: '/HomePage/GetRecipe?id='+id,
+                method: "GET",
+                success: function (data) {
+                    const carousel = $("#recipe")
+                    recipehtml(data, carousel)
+                    console.log(data)
+                },
+                complete: function () {
+                    $('#loading2').css("display", "none");
+                },
+                error: function (data) {
+                    alert("修改失敗");
+                }
+            })
+        }
+        //產生食譜卡function
+        function recipehtml(datas, carousel) {
+            let list = new Array()
+            datas.forEach(function (item) {
+                let { recipeName, recipeId, picture, views, postTime, likeCount, recipeDescription, nickname } = item
+                if (views == undefined) {
+                    views = 0;
+                }
+                if (likeCount == undefined) {
+                    likeCount = 0;
+                }
+                const img = $("<img class='c-img'>")
+                img.attr("src", picture)
+                const pic = $("<div class='c-pic'></div>").append(img);
+
+                const h5 = $("<h5 class='title'></h5>").text(recipeName)//1
+                const title =  $("<div class='title-div'></div>").append(h5);
+
+                const p_recipedescription = $("<p class='content'></p>").text(recipeDescription)//2
+
+
+                const sm_nickname = $(`<small><i class='fas fa-user-edit'>${' '+nickname}</i></small>`)
+                const sm_views = $(`<small><i class='fas fa-heart heart'>${' ' + likeCount}</i></small>`)
+                const sm_like = $(`<small><i class='fas <i class="fas fa-eye eye"></i> heart'>${' ' + views}</i></small>`)
+                const sm_posttime = $("<small></small>").text(postTime.substring(0, 10))
+
+                const p_nickname = $("<p  class='info'></p>").append(sm_nickname)//3
+                const p_views = $("<span  class='c-view'></span>").append(sm_views)//4
+                const p_like = $("<span  class='c-like'></span>").append(sm_like)//5
+                const p_posttime = $("<div  class='footer'></div>").append(sm_posttime)//6
+
+                const card_body = $("<div class='c-body'></div>").append([title, p_recipedescription, p_nickname, p_views, p_like, p_posttime]) //card_body
+
+                const card = $("<div class='c'></div>").append([pic, card_body])
+                card.attr("data-id", recipeId)
+                list.push(card)
+                card.on("click", function () {
+                    window.location.href=`/forrecipe/recipe?id=${$(this).data("id")}`
+                })
+            })
+            list.forEach(function (card) {
+                carousel.append(card)
+            })
+            settext();
+        }
+
+        function settext() {
+            var len = 20; // 超過50個字以"..."取代
+            $(".content").each(function (i) {
+                if ($(this).text().length > len) {
+                    $(this).attr("title", $(this).text());
+                    var text = $(this).text().substring(0, len - 1) + "...";
+                    $(this).text(text);
+                }
+            });
+        };
+    </script>
+}
+
+

@@ -1,0 +1,83 @@
+﻿
+
+
+@model prjDelicious.Models.Taccusation
+
+@{
+    Layout = "_Layout_NoSession";
+    ViewData["Title"] = "RecipeAccusationCreate";
+}
+
+<div class="container"  >
+    <h2>檢舉食譜</h2>
+    <hr />
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="RecipeAccusationCreate">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="MemberId" class="control-label" hidden>會員</label>
+                    <input asp-for="MemberId" class="form-control" asp-items="ViewBag.MemberId" hidden/>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AccuseId" class="control-label">檢舉項目</label>
+                    <select id="AccuseId" asp-for="AccuseId" class="form-control" asp-items="ViewBag.AccuseId"></select>
+                    <span id="SpanAccuseId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+
+                    <input asp-for="AccusedAvatar" class="form-control" value="1" hidden/>
+                    <span asp-validation-for="AccusedAvatar" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AccusedId" class="control-label" hidden>被檢舉</label>
+                    <input asp-for="AccusedId" class="form-control" hidden/>
+                    <span asp-validation-for="AccusedId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="送出" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div>
+        <a asp-action="Index">回上一頁</a>
+    </div>
+    </div>
+    @section Scripts {
+        <script>
+    const AccuseId = document.querySelector('#AccuseId')
+    const xhr = new XMLHttpRequest();
+        xhr.addEventListener('load', function () {
+
+            if (xhr.status == 200) {
+                const datas = JSON.parse(xhr.responseText)
+                //console.log(this.responseText);
+                //步驟4
+                var option = document.createElement("option");
+                option.text = "請選擇";
+                AccuseId.options.add(option)
+                datas.forEach((item) => {
+                    const accusation = item.accusation
+                    //步驟5顯示資料
+                    const opt = new Option(accusation, accusation)
+                    AccuseId.options.add(opt)
+                })
+            }
+            else {
+                console.log(xhr.status)
+            }
+        })
+
+        xhr.open('GET', '@Url.Action("AccusationList", "accusations")')
+
+        xhr.send();
+            AccuseId.addEventListener("onchange", function () {
+                if (AccuseId.selectedIndex == 0) {
+                    $('#SpanAccuseId').text = "請選擇檢舉項目"
+                }
+            })
+        </script>
+
+    }

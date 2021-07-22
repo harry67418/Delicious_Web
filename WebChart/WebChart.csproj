@@ -1,0 +1,52 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="wwwroot\img\IngredientPic\202106240941435.jpg" />
+    <None Remove="wwwroot\img\IngredientPic\202106241141405.jpg" />
+    <None Remove="wwwroot\img\IngredientPic\202106241142195.jpg" />
+    <None Remove="wwwroot\img\IngredientPic\202106241142485.jpg" />
+    <None Remove="wwwroot\img\IngredientPic\202106241143265.jpg" />
+    <None Remove="wwwroot\img\IngredientPic\202106271102253.jpg" />
+    <None Remove="wwwroot\img\IngredientPic\202106300131021.jpg" />
+    <None Remove="wwwroot\img\IngredientPic\202107020901205.jpg" />
+    <None Remove="wwwroot\img\IngredientPic\defaultpic.jpg" />
+    <None Remove="wwwroot\img\LOGO.jpg" />
+    <None Remove="wwwroot\img\ShowingPic\202106250223440.jpg" />
+    <None Remove="wwwroot\img\ShowingPic\202106250230560.jpg" />
+    <None Remove="wwwroot\img\ShowingPic\202106250343355.jpg" />
+    <None Remove="wwwroot\img\ShowingPic\202106250443550.jpg" />
+    <None Remove="wwwroot\img\ShowingPic\202106250444320.jpg" />
+    <None Remove="wwwroot\img\ShowingPic\202106250445080.jpg" />
+    <None Remove="wwwroot\img\ShowingPic\202106250445460.jpg" />
+    <None Remove="wwwroot\img\ShowingPic\202106250647220.jpg" />
+    <None Remove="wwwroot\img\ShowingPic\202106250647420.jpg" />
+    <None Remove="wwwroot\img\ShowingPic\202106250705450.jpg" />
+    <None Remove="wwwroot\img\ShowingPic\2021062507070914.jpg" />
+    <None Remove="wwwroot\img\ShowingPic\202106271055130.jpg" />
+    <None Remove="wwwroot\img\ShowingPic\202106271057320.jpg" />
+    <None Remove="wwwroot\img\ShowingPic\202107021103050.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.7">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.7">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\uploads\" />
+  </ItemGroup>
+
+</Project>

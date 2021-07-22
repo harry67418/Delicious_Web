@@ -1,0 +1,62 @@
+﻿@{
+    ViewData["Title"] = "頁面登入";
+    Layout = null;
+}
+<html lang="en">
+<head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="~/js/scripts.js"></script>
+    <link href="/assets/img/favicon.png" rel="icon">
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>@ViewData["Title"]</title>
+    <link href="~/css/styles.css?001" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
+</head>
+<body style="background: url('/img/ShowingPic/202106250445460.jpg');background-repeat:no-repeat;background-size: cover;margin-top:70px">
+    <div class="text-center mt-5">
+        <div class="container h-50">
+            <div class="row justify-content-center">
+                <div class="col-lg-5">
+                    <div class="card border-0 mt-5 shadow-lg bg-transparent">
+                        <div class="card-header" style="background-color:rgba(100,38,38,0.2)"><img src="~/img/LOGO.jpg" style="width:250px;height:250px;opacity:1" /><h3 class="text-center font-weight-light my-4" style="color:white;font-weight:800">管理員您好</h3> <h5 class="text-center font-weight-light my-4" style="color:white;font-weight:800">請先進行登入</h5></div>
+                        <div class="card-body" style="background-color:rgba(100,38,38,0.2)">
+                            <form method="post">
+                                <div class="form-floating mb-3">
+                                    <input class="form-control" id="AccountName" name="AccountName" type="text" placeholder="Account" />
+                                    <label for="inputAccount">帳號</label>
+                                </div>
+                                <div class="form-floating mb-3" style="margin-top:50px;">
+                                    <input class="form-control" id="Password" name="Password" type="password" placeholder="Password" />
+                                    <label for="inputPassword">密碼</label>
+                                </div>
+
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <input type="button" style="margin-top:30px;font-weight:900;border:15px" class="btn col-6 btn-light" id="demo" value="demo">
+                                    <button type="submit" style="margin-top:30px;font-weight:900;border:15px" class="btn col-6 btn-light">登入</button>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
+
+    
+    <script>
+        $("#demo").on("click", function () {
+            $("#AccountName").val("admin123")
+            $("#Password").val("admin123")
+        })
+
+    </script>
+

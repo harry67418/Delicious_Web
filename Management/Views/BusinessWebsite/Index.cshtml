@@ -1,0 +1,355 @@
+﻿
+@{
+    ViewData["Title"] = "商城一覽表";
+}
+
+
+<div  class="text-center h3 bgmainbar">商城一覽表</div>
+
+
+
+
+
+    <!-- Content Row -->
+    <div class="row">
+
+        <!-- Earnings (Monthly) Card Example -->
+        <div class="col-xl-6 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold wordcolor text-uppercase mb-1 h4">
+                                目前會員數
+                            </div>
+                            <div class="h3 mb-0 font-weight-bold text-gray-800">@ViewBag.membercount</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user-friends" style="font-size:40px"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Earnings (Monthly) Card Example -->
+        <div class="col-xl-6 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold  text-uppercase mb-1 h4 wordcolor">
+                                販售商品數量
+                            </div>
+                            <div class="h3 mb-0 font-weight-bold text-gray-800">@ViewBag.merchadisecount</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-apple-alt" style="font-size:40px"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Content Row -->
+    <div class="row">
+
+        <!-- Earnings (Monthly) Card Example -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold wordcolor text-uppercase mb-1 h4">
+                                已付款訂單
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.countofdealingorder</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-paste" style="font-size:30px"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Earnings (Monthly) Card Example -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold wordcolor text-uppercase mb-1 h4">
+                                出貨中訂單
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.countofdeliveringorder</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-truck-moving" style="font-size:30px"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Earnings (Monthly) Card Example -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold wordcolor text-uppercase mb-1 h4">
+                                低庫存
+                            </div>
+                            <div class="row no-gutters align-items-center">
+                                <div class="col-auto">
+                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">@ViewBag.lowquantity</div>
+                                </div>
+                                <div class="col">
+                                    <div class="progress progress-sm mr-2">
+                                        <div class="progress-bar bg-info" role="progressbar"
+                                             style="width: @ViewBag.percentlow" aria-valuemin="0"
+                                             aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-less-than-equal" style="font-size:30px"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Requests Card Example -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold wordcolor text-uppercase mb-1 h4">
+                                高庫存
+                            </div>
+                            <div class="row no-gutters align-items-center">
+                                <div class="col-auto">
+                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">@ViewBag.highquantity</div>
+                                </div>
+                                <div class="col">
+                                    <div class="progress progress-sm mr-2">
+                                        <div class="progress-bar bg-info" role="progressbar"
+                                             style="width: @ViewBag.percenthigh" aria-valuemin="0"
+                                             aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-angle-right" style="font-size:30px"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Content Row -->
+
+    <div class="row">
+
+
+        <div class="col-xl-6 col-md-6 mb-4">
+            <!-- Card Header - Accordion -->
+            <p class="card-header bg-light">
+                <a href="#orderdetails" class="d-block py-3" data-toggle="collapse"
+                   role="button" aria-expanded="true" aria-controls="orderdetails">
+                    <label class="text-xs font-weight-bold wordcolor text-uppercase mb-1 h4">已付款訂單明細</label>
+                </a>
+                <a class="btn btn-outline-info " href="/order/index/?orderstatus=已付款">前往訂單</a>
+            </p>
+            <!-- Card Content - Collapse -->
+            <div class="collapse" id="orderdetails">
+                <div class="card-body">
+
+                    <table id="conditions" class="table h5 table-hover">
+                        <thead style=" text-align: center;background-color: #01A9B4;color: #FFF5FD">
+                            <tr>
+                                <th>序號</th>
+                                <th>訂單編號</th>
+                                <th>訂單日期</th>
+                                <th>宅配方式</th>
+                            </tr>
+                        </thead>
+                        <tbody style="text-align:center;background-color:#FFF5FD"></tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+
+
+        <div class="col-xl-6 col-md-6 mb-4">
+            <!-- Card Header - Accordion -->
+            <p class="card-header bg-light">
+                <a href="#hotfood" class="d-block py-3" data-toggle="collapse"
+                   role="button" aria-expanded="true" aria-controls="hotfood">
+                    <label class="text-xs font-weight-bold wordcolor text-uppercase mb-1 h4">食材當期熱銷</label>
+                </a>
+                <a class="btn btn-outline-info " href="/Ingredient/SessionDemoSend">前往商品</a>
+            </p>
+            <!-- Card Content - Collapse -->
+            <div class="collapse" id="hotfood">
+                <div class="card-body">
+
+                    <table id="MerchadiseRank" class="table table-hover h5 font-weight-bold">
+                        <thead style="text-align:center;background-color:#01A9B4;color:#FFF5FD">
+                            <tr>
+                                <th>銷售排名</th>
+                                <th>食材編號</th>
+                                <th>當期銷售</th>
+                                <th>上期銷售</th>
+                                <th>庫存量</th>
+
+                            </tr>
+                        </thead>
+                        <tbody style="text-align:center;background-color:#FFF5FD"></tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="col-xl-6 col-md-6 mb-4">
+            <!-- Card Header - Accordion -->
+            <p class="card-header bg-light">
+                <a href="#orderdetails2" class="d-block py-3" data-toggle="collapse"
+                   role="button" aria-expanded="true" aria-controls="orderdetails2">
+                    <label class="text-xs font-weight-bold wordcolor text-uppercase mb-1 h4">出貨中訂單明細</label>
+                </a>
+                <a class="btn btn-outline-info " href="/Order/Index/?orderstatus=出貨中">前往訂單</a>
+            </p>
+            <!-- Card Content - Collapse -->
+            <div class="collapse" id="orderdetails2">
+                <div class="card-body">
+
+                    <table id="conditions1" class="table table-hover h5 font-weight-bold">
+                        <thead style=" text-align: center;background-color: #01A9B4;color: #FFF5FD">
+                            <tr>
+                                <th>序號</th>
+                                <th>訂單編號</th>
+                                <th>訂單日期</th>
+                                <th>宅配方式</th>
+                            </tr>
+                        </thead>
+                        <tbody style="text-align:center;background-color:#FFF5FD"></tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+       
+    </div>
+    @section Scripts{
+
+        <script>
+        search()
+        search1()
+
+                        async function search() {
+                            const formconditions = new FormData()
+                            formconditions.append("SelOrderStatus", "已付款")
+                            formconditions.append("SelOrderMin", '@(DateTime.Today.AddYears(-1).ToString("yyyy-MM-dd"))')
+                            formconditions.append("SelOrderMax", '@(DateTime.Today.AddDays(1).AddMinutes(-1).ToString("yyyy-MM-dd"))')
+
+                            const docfrag = $(document.createDocumentFragment())
+
+
+                            console.log(formconditions)
+                            var response = await fetch('/Order/conditions', { method: 'Post', body: formconditions })
+                            var data = await response.json()
+                            var count = 0
+                            //console.log("確認:" + data)
+                           await  data.forEach(items => {
+                                count = count + 1
+                                const tID1 = $('<td></td>').text(count)
+                                const tID2 = $('<td></td>').text(items.orderId)
+                                const tID3 = $('<td></td>').text(items.orderDate)
+                                const tID4 = $('<td></td>').text(items.recieveMethod)
+                                const row = $('<tr></tr>').append([tID1], [tID2], [tID3], [tID4])
+                                docfrag.append(row)
+                            })
+
+                            $('#conditions>tbody').html(docfrag)
+
+
+
+
+
+                            searchMerchadise()
+
+                        }
+
+                      async function search1() {
+
+
+                            const formconditions1 = new FormData()
+                            formconditions1.append("SelOrderStatus", "出貨中")
+                            formconditions1.append("SelOrderMin", '@(DateTime.Today.AddYears(-1).ToString("yyyy-MM-dd"))')
+                            formconditions1.append("SelOrderMax", '@(DateTime.Today.AddDays(1).AddMinutes(-1).ToString("yyyy-MM-dd"))')
+                             formconditions1.append("SelDelMin", '@(DateTime.Today.AddYears(-1).ToString("yyyy-MM-dd"))')
+                            formconditions1.append("SelDelMax", '@(DateTime.Today.AddDays(1).AddMinutes(-1).ToString("yyyy-MM-dd"))')
+
+                          const docfrag = $(document.createDocumentFragment())
+
+                          console.log(formconditions1)
+                          var response1 = await fetch('/Order/conditions', { method: 'Post', body: formconditions1 })
+                            var data1 = await response1.json()
+                            var count1 = 0
+                            console.log("確認:" + data1)
+                            await data1.forEach(items => {
+
+                                count1 = count1 + 1
+                                const tID1 = $('<td></td>').text(count1)
+                                const tID2 = $('<td></td>').text(items.orderId)
+                                const tID3 = $('<td></td>').text(items.orderDate)
+                                const tID4 = $('<td></td>').text(items.recieveMethod)
+                                const row = $('<tr></tr>').append([tID1], [tID2], [tID3], [tID4])
+                                docfrag.append(row)
+                            })
+
+                            console.log(data1)
+                            $('#conditions1>tbody').html(docfrag)
+        }
+
+                        async function searchMerchadise() {
+                            const docfrag1 = $(document.createDocumentFragment())
+
+                            var response = await fetch('/BusinessWebsite/MerchadiseRank', { method: 'Get' })
+                            var data = await response.json()
+                            var count = 0
+                            console.log(data)
+                           /* Array.from(data).forEach(function (data) { console.log(data[0]) })*/
+                            data._MerchadiseRanklist.forEach(items => {
+                                count = count + 1
+                                const tID1 = $('<td></td>').text(count)
+                                const tID2 = $('<td></td>').text(items.ingredient)
+                                const tID3 = $('<td></td>').text(items.thismonthsum )
+                                const tID4 = $('<td></td>').text(items.lastmonthsum)
+                                const tID5 = $('<td></td>').text(items.quantity)
+                                const row = $('<tr></tr>').append([tID1], [tID2], [tID3], [tID4], [tID5])
+                                docfrag1.append(row)
+                            })
+
+
+                            $('#MerchadiseRank>tbody').html(docfrag1)
+                        }
+        </script>
+    }
+
+
+

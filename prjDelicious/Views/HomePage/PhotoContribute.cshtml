@@ -1,0 +1,70 @@
+﻿@model prjDelicious.ViewModel.CPhotoWallViewModel
+@{
+    ViewData["Title"] = "PhotoContribute";
+}
+@section Style{
+    <link href="/assets/css/photoContribute.css" rel="stylesheet">
+}
+<section class="align-items-center">
+    <div class="container" id="userinfo">
+        <div class="row">
+            <div class="col-md-12">
+                <form asp-action="PhotoContribute" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group" hidden>
+                        <label asp-for="MemberId" class="control-label"></label>
+                        <input asp-for="MemberId" class="form-control" />
+                        <span asp-validation-for="MemberId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group" style="width:30%; margin-bottom:20px">
+                        <div>
+                            <span asp-validation-for="CategoryID" class="text-danger"></span>
+                            <select asp-for="CategoryID" class="form-select shadow-sm" aria-label="Default select example">
+                                <option disabled selected>請選擇投稿分類</option>
+                                @foreach (var item in Model._categorys)
+                                {
+                                    <option value="@item.CategoryId">@item.CategoryName</option>
+                                }
+                            </select>
+                            <input type="submit" value="送出投稿!" class="btn btn-primary" id="send" style="margin-top:20px" disabled />
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom:20px">
+                        <div class="avatar-zone">
+                            <img src="" id="pic" />
+                        </div>
+
+                        <input type="file" class="upload_btn" id="selpic" name="photo" />
+                        <div class="overlay-layer bi bi-image">加入圖片</div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        const selpic = document.querySelector("#selpic")
+        const pic = document.querySelector("#pic")
+
+        selpic.onchange = function (e) {
+            if (selpic.files && selpic.files[0]) {
+                pic.src = URL.createObjectURL(selpic.files[0])
+                $("#send").removeAttr("disabled");
+            }
+        }
+    </script>
+    <script type="text/javascript" charset="utf-8">
+        @if (!ViewData.ModelState.IsValid && ViewData.ModelState["Error"].Errors.Count > 0)
+        {
+            <text>
+            $(document).ready(function() {
+                alert('@ViewData.ModelState["Error"].Errors.First().ErrorMessage');
+                window.location.href = "/HomePage/Index";
+            });
+            </text>
+        }
+    </script>
+}

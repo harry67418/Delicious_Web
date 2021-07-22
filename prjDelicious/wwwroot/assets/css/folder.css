@@ -1,0 +1,38 @@
+﻿.folder-container {
+    background-color: #fff7e9;
+    border-radius:5px
+}
+
+.recipe-list {
+    height: 600px;
+    overflow: auto;
+}
+.recipe {
+    max-width: 600px;
+    background-color: #ffefd4;
+}
+    .recipe img {
+        text-align: center;
+        line-height: 140px;
+        height: 140px;
+        width: 320px;
+        cursor: pointer;
+    }
+        .recipe img:hover {
+            border:3px solid #ffaa4f;
+        }
+.btn-group {
+    float: right;
+}
+.section-title h2 {
+    padding-top:20px;
+    border-bottom:1px solid #f1f1f1;
+}
+.folder-block {
+    border:1px solid #ffcf82;
+    border-radius:5px;
+    height:450px;
+}
+.folder-block button,.folder-block small {
+    margin-bottom: 20px;
+}

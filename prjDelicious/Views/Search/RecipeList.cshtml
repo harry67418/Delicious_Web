@@ -1,0 +1,170 @@
+﻿
+@{
+    ViewData["Title"] = "RecipeList";
+}
+
+
+<style>
+    .reciperow {
+    }
+    .container {
+        
+    }
+    .box {
+        margin: auto;
+    }
+</style>
+<body>
+    <hr />
+    <div id="loading" style="height: 67%">
+        <h1 style="margin: 0 auto;  max-width: 300px;">搜尋中...</h1>
+    </div>
+    <div  id="empty"  style="height: 67%">
+        <h1 style="margin: 0 auto;  max-width: 300px;">無相符結果</h1>
+    </div>
+    <div id="loaded" style="margin: 0 auto; max-width: 1000px;">
+        <h2 style="margin: 0 auto;  max-width: 300px;"><span id="count" style="margin: 0 auto;  max-width: 300px;"></span></h2>
+        <hr />
+        <h3>
+            依類別選擇:
+            <select id="selcat"></select>
+            <span style="color:white">________</span>
+            <span>排序方式:</span>
+            <span id="views">點閱數</span>
+            <span>/</span>
+            <span id="likes">喜歡</span>
+        </h3>
+    </div>
+    <hr />
+
+    <div id="divrow" style="margin: 0 auto; font-weight:bold;"></div>
+</body>
+@section Scripts{
+    <script>
+        const fragR = $(document.createDocumentFragment())
+        const fragC = $(document.createDocumentFragment())
+        
+        $('#txtSearch').on('change', $('input'), function () { SearchRecipe() })
+        $('#selcat').on('change', $('input'), function () { selc() })
+        $('#views').click(function () { vsort() })
+        $('#likes').click(function () { lsort() })
+        
+        let rowclick = function (id) {
+            window.open('/ForRecipe/Recipe?id=' + id)
+        }
+        $('#loaded').hide()
+        $('#empty').hide()
+        $('#txtSearch').val('@Html.Raw(ViewBag.txt)')
+        GetCategories()
+        SearchRecipe()
+        async function GetCategories() {
+            let response = await fetch('/Search/GetCategories/')
+            let cate = await response.json()
+            fragC.append('<option selected value="0">全部</option>')
+            cate.forEach(items => {
+                const id = items.recipeCategoryId
+                const name = items.recipeCategory
+                const option = $('<option value="' + name + '">' + name + '</option>')
+                fragC.append(option)
+            })
+            $('#selcat').html(fragC)
+        }
+        let alldata = ""
+        let data = ""
+        async function SearchRecipe() {
+            let response = await fetch('/Search/SearchRecipe?txtSearch=' + $('#txtSearch').val())
+            alldata = await response.json()
+            data = alldata
+            $('#loading').hide()
+            $('#empty').hide()
+            $('#loaded').show()
+            $('#selcat').val('0')
+            vsort()
+        }
+        function vsort() {
+            data.sort(function (a, b) {
+                return b.views - a.views
+            })
+            Show()
+            $('#views').text('點閱數▼')
+            $('#likes').text('喜歡')
+        }
+        function lsort() {
+            data.sort(function (a, b) {
+                return b.likes - a.likes
+            })
+            Show()
+            $('#views').text('點閱數')
+            $('#likes').text('喜歡▼')
+        }
+        function Show() {
+            let count = 0
+            data.forEach(items => {
+                count = count + 1
+                let tags = ""
+                items.tags.forEach(t => {
+                    tags += "#" + t + " ";
+                })
+                const rcount = $('<td></td>').text(count)
+                const rimg = $('<td><img src="' + items.picture + '" width="100" height="100"></td>')
+                const rname = $('<td></td>').text(items.recipeName)
+                const rcate = $('<td></td>').text(items.recipeCategory)
+                const rviews = $('<td></td>').text(items.views +'👁️')
+                const rlikes = $('<td></td>').text(items.likes +'👍')
+                const rtags = $('<td></td>').text(tags)
+                const row = $('<tr id="' + items.recipeId + '" class="reciperow card"></tr>').append(rcount, rimg, rname, rcate, rviews, rlikes, rtags)
+                //const card = $('<div class="card mb-3" style="max-width: 1000px;"><div class= "row g-0" ><div class="col-md-4"><img src="' + items.picture + '" class="img-fluid rounded-start" alt="..."></div><div class="col-md-8"><div class="card-body"><h5 class="card-title">' + items.recipeName + '</h5><p class="card-text">' + items.recipeDescription+'</p><p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p></div></div></div></div >')
+                const card = $(
+                    //'<div class="card mb-3 reciperow" style="max-width: 540px; height:240px ; display: inline-block;">'
+                    '<div id="'+ items.recipeId +'" class="card mb-3 reciperow" style="max-width: 1000px; margin: 0 auto;">'
+                        +'<div class="row g-0">'
+                            +'<div class="col-md-4">'
+                    + '<img src="' + items.picture +'" onerror="nofind()" class="img-fluid rounded-start" alt="...">'
+                            +'</div>'
+                                +'<div class="col-md-8">'
+                                    +'<div class="card-body">'
+                    + '<h3 class="card-title">' + items.recipeName+'</h3>'
+                    + '<p class="card-text">' + items.recipeDescription + '</p>'
+                    + '<p class="card-text"><small class="text-muted">👁️' + items.views + '👍' + items.likes +  '</small></p>'
+                    + '<p class="card-text"><small class="text-muted">' + tags + '</small></p>'
+                    + '<p class="card-text"><small class="text-muted">' + items.member + '</small></p>'
+                    + '<p class="card-text"><small class="text-muted">' + items.time + '</small></p>'
+                                    +'</div>'
+                                +'</div>'
+                            +'</div>'
+                        +'</div>'
+                )
+                fragR.append(card)
+            })
+            if (count == 0) {
+                $('#loaded').hide()
+                $('#empty').show()
+            }
+            $('#divrow').html(fragR)
+            $(".reciperow").click(function () {
+                let id = $(this).attr('id')
+                rowclick(id)
+            })
+            $('#count').text('' + count + '筆結果')
+        }
+        function selc() {
+            if ($('#selcat option:selected').text() === '全部') {
+                data = alldata
+            }
+            else {
+                data = alldata.filter(function (item, index, array) {
+                    return item.recipeCategory === $('#selcat option:selected').text();
+                })
+            }
+            vsort()
+        //    console.log($('#selcat option:selected').text())
+        }
+    </script>
+    }
+<script type="text/javascript">
+    function nofind() {
+        var img = event.srcElement;
+        img.src = '/assets/img/category.png'; //替換的圖片
+        img.onerror = null; //控制不要一直觸發錯誤
+    }
+</script>
